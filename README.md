@@ -5,7 +5,7 @@ Repository created to deliver the exercises for the subject "Laboratorio di Simu
 ## Requirements
 
 - g++ C++ compiler
-- Python 3.* with numpy and maplotlib modules installed
+- Python 3.* with numpy, scipy and maplotlib modules installed
 - IPython Notebook
 
 ## Usage
