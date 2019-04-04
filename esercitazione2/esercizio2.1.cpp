@@ -12,15 +12,16 @@ double error(double av, double av2, int n){
 	else return sqrt((av2 - av*av)/n);
 };
 
-double funzione(double r){
-	return M_PI*cos(M_PI*r/2)/2;
+double funzione(double x){
+	return M_PI*cos(M_PI*x/2)/2;
 };
 
-double funzione_imp_samp(double r){
-	double y = M_PI*r/2.;
+double taylor(double x){
+  return 1.-pow(M_PI*x,2)/8.;
+}
 
-	return 5*M_PI*cos(y)/(12*(1. - pow(y,2)/2.));
-
+double p_dist(double x){
+  return (24./(24.- pow(M_PI, 2)))*taylor(x);
 }
 
 int main(int argc, char* argv[]){
@@ -33,7 +34,7 @@ int main(int argc, char* argv[]){
 	int p1, p2;
 	ifstream Primes("Primes");
 	if (Primes.is_open()){
-		Primes >> p1 >> p2 ;
+		Primes >> p1 >> p2;
 	} else cerr << "PROBLEM: Unable to open Primes" << endl;
 	Primes.close();
 	ifstream input("seed.in");
@@ -55,15 +56,10 @@ int main(int argc, char* argv[]){
 	unsigned int M = 100000;         // Total number of throws
 	unsigned int N = 100;            // Number of blocks
 	unsigned int L = int(M/N);       // Number of throws in each block
-	
-	double r[M];	    // Random numbers to use
-	for(unsigned int i = 0; i < M; i++){	
-		r[i] = rnd.Rannyu(); 
-	}
 
 	double x[N];        // [0,1,2,..., N-1] * block size
 	for(unsigned int i = 0; i < N; i++){
-		x[i] = i*L;
+		x[i] = i+1;
 	}
 
 	double ave[N];       // Averages vector
@@ -73,12 +69,10 @@ int main(int argc, char* argv[]){
 	double err_prog[N];  // Statistical uncertainty
 
 	double sum;
-	unsigned int k;
 	for(unsigned int i = 0; i<N; i++){
 		sum = 0;
 		for(unsigned int j = 0; j < L; j++){
-			k = j+i*L;
-			sum += funzione(r[k]);
+			sum += funzione(rnd.Rannyu());
 		}
 		ave[i] = sum/L;
 		ave2[i] = pow(ave[i],2);
@@ -116,19 +110,19 @@ int main(int argc, char* argv[]){
 	}
 
 	// --------------------------------------------------------------
-
 	
-	double rs[M]; 
-	for(unsigned int i = 0; i < M; i++){	
-		rs[i] = rnd.CosineAR(M_PI/2); 
-	}
-
-	
+	double a, b;
 	for(unsigned int i = 0; i<N; i++){
 		sum = 0;
 		for(unsigned int j = 0; j < L; j++){
-			k = j+i*L;
-			sum += funzione_imp_samp(rs[k]);
+
+			do{
+				a = rnd.Rannyu();
+				b = rnd.Rannyu();
+			} while (b > p_dist(a));
+			
+			sum += funzione(a)/p_dist(a);
+
 		}
 		ave[i] = sum/L;
 		ave2[i] = pow(ave[i],2);

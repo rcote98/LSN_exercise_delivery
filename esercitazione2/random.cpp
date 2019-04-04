@@ -65,21 +65,6 @@ double Random :: Angle(){
 
 };
 
-double cosine_approx(double x){
-	return 6*(1-pow(x,2)/2)/5;
-}
-
-double Random :: CosineAR(double factor){	
-	double x,y;
-	
-	do{
-	x = Rannyu(0,1);
-	y = Rannyu(0,1);
-	}
-	while(y > cosine_approx(factor*x));
-	return x;
-}
-
 // ------------------------------------------------------------------
 
 double Random :: Rannyu(void){

@@ -161,13 +161,11 @@ int main(int argc, char* argv[]){
 		sum = 0;
 		for(unsigned int j = 0; j<sims; j++){
 			k = j + i*sims;
-			cout << k << ", " << rtheta[k] << ", " << rphi[k] << endl;
-
+			
 			pos[j][0] += a*sin(rtheta[k])*cos(rphi[k]);
 			pos[j][1] += a*sin(rtheta[k])*sin(rphi[k]);
 			pos[j][2] += a*cos(rtheta[k]);
 
-			cout <<  pos[j][0] << ", " << pos[j][1]<< ", " <<  pos[j][2]  << endl;
 			sum+= sqrt(pow(pos[j][0],2)+pow(pos[j][1],2)+pow(pos[j][2],2));
 		}
 		ave[i] = sum/sims;

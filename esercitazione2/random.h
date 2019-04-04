@@ -31,7 +31,6 @@ public:
   double Gauss(double mean, double sigma);
   double Lorentz(double mu, double gamma);
   double Exponential(double lambda);
-  double CosineAR(double factor); // da fare
   double Angle();
   
 };
