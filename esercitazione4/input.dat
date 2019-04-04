@@ -5,7 +5,10 @@
 0.0005
 10000
 1000
+100
+1
 0
+sim4.1
 
   ReadInput >> temp;
   ReadInput >> npart;
@@ -14,4 +17,7 @@
   ReadInput >> delta;
   ReadInput >> nstep;
   ReadInput >> iprint;
-  ReadInput >> LOAD_SIM;
+  ReadInput >> nblocks;
+  ReadInput >> RESTART;
+  ReadInput >> REWRITE; 
+  ReadInput >> sim_name

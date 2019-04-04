@@ -12,6 +12,15 @@ double error(double av, double av2, int n){
 	else return sqrt(pow(av-av2, 2)/n);
 }
 
+int dice(double r){
+	if(r < 1./6.) return 1;
+	if(r > 1./6. && r < 2./6.) return 2;
+	if(r > 2./6. && r < 3./6.) return 3;
+	if(r > 3./6. && r < 4./6.) return 4;
+	if(r > 4./6. && r < 5./6.) return 5;
+	else return 6;
+}
+
 int main(int argc, char* argv[]){
 
 	// RNG SETUP ----------------------------------------------
@@ -53,14 +62,14 @@ int main(int argc, char* argv[]){
 		for(unsigned int j=0; j<M; j++){
 			sum = 0;
 			for(unsigned int k=0; k < N[i]; k++){
-				sum += rnd.Gauss(0,1)/N[i];
+				sum += (double)dice(rnd.Rannyu())/(double)N[i];
 			}
 			series_sum[i][j] = sum;	
 		}
 	}
 
 	fstream fout1;
-	fout1.open("result1.2.gauss.csv", fstream::out);
+	fout1.open("result1.2.dice.csv", fstream::out);
 	fout1 << "N=1, N=2, N=10, N=100" << endl;
 	for(unsigned int i = 0; i < M; i++){
 		fout1 << series_sum[0][i] << ", " << series_sum[1][i] << ", " 
