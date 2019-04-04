@@ -19,3 +19,11 @@ To view the solutions, compile the cpp code and execute all the .exe files gener
   ./esercizio.\*.exe
   ```
 The raw data will be stored in conveniently named .csv files. To view them, execute all the commands within the notebook in order (many variable names are reused for convenience).
+
+
+## Exercises
+
+- Exercise 1: 
+- Exercise 2:
+- Exercise 3:
+- Exercise 4:
