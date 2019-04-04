@@ -6,7 +6,7 @@ Repository created to deliver the exercises for the subject "Laboratorio di Simu
 
 - g++ C++ compiler
 - Python 3.* with numpy, scipy and maplotlib modules installed
-- IPython Notebook
+- Jupyter Notebook
 
 ## Usage
 
@@ -23,7 +23,7 @@ The raw data will be stored in conveniently named .csv files. To view them, exec
 
 ## Exercises
 
-- Exercise 1: 
-- Exercise 2:
-- Exercise 3:
+- Exercise 1: Testing the RNG, generating distributions, Buffon's experiment.
+- Exercise 2: Monte Carlo integration, importance sampling
+- Exercise 3: European option Call/Put value prediction
 - Exercise 4:
