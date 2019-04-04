@@ -42,11 +42,11 @@ double Random :: Rannyu(double min, double max){
 }
 
 double Random :: Exponential(double lambda){
-  return -log(1-Rannyu())/lambda;
+  return -log(1-Rannyu(0,1))/lambda;
 }
 
-double Random :: Lorentz(double mu, double gamma){
-  return gamma*tan(M_PI*(Rannyu()-0.5));
+double Random :: Lorentz(double mean, double gamma){
+  return mean + gamma*tan(M_PI*(Rannyu(0,1)-(1./2.)));
 }
 
 double Random :: Rannyu(void){

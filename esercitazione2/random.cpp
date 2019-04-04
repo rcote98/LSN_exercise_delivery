@@ -51,16 +51,6 @@ double Random :: Lorentz(double mu, double gamma){
   return gamma*tan(M_PI*(Rannyu()-0.5));
 }
 
-double Random :: Cosine(double a, double b){	
-	double x, y;
-	do{
-	x = Rannyu(a,b);
-	y = Rannyu(0,1);
-	}
-	while(y > abs(cos(x)));
-	return x;
-}
-
 double Random :: Angle(){
 
 	double x,y;
@@ -74,6 +64,21 @@ double Random :: Angle(){
 	else return 2*M_PI - acos(x/sqrt(pow(x,2)+pow(y,2)));
 
 };
+
+double cosine_approx(double x){
+	return 6*(1-pow(x,2)/2)/5;
+}
+
+double Random :: CosineAR(double factor){	
+	double x,y;
+	
+	do{
+	x = Rannyu(0,1);
+	y = Rannyu(0,1);
+	}
+	while(y > cosine_approx(factor*x));
+	return x;
+}
 
 // ------------------------------------------------------------------
 

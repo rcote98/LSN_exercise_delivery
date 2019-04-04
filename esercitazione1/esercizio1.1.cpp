@@ -7,10 +7,12 @@
 
 using namespace std;
 
+// std function given the average, average squared and number of values n
 double error(double av, double av2, int n){
 	if (n==0) return 0;
 	else return sqrt((av2 - av*av)/n);
 }
+
 
 int main(int argc, char* argv[]){
 
@@ -147,33 +149,41 @@ int main(int argc, char* argv[]){
 	
 	unsigned int n = 10000;     // Number of random numbers
 	unsigned int T = 100;       // Number of intervals
+	double expected = n/T;      // Expected hits per interval
 
-	double random[n];           // Vector containing the random number
-	double ni[T];               // Placeholder for count number
+	double random[n];           // Vector containing the random numbers
+	double ni[T];               // Vector for # of counts per interval
 
-	double chi[100];            // Container for chi sqaured
+	double chi[100];            // Container for chi squared
 
-	double min, max;
-	for(unsigned int j = 0; j < 100; j++){
+	double min, max; 
+	for(unsigned int j = 0; j < 100; j++){ // Iteration over all the chi2's
 
-		for(unsigned int i = 0; i < n; i++){ni[i] = 0;}
+		for(unsigned int i = 0; i < T; i++){ni[i] = 0;}
 		for(unsigned int i = 0; i < n; i++){random[i] = rnd.Rannyu();}
 
-		
+		for(unsigned int k=0; k<T; k++){ // Iteration over every subinterval
 
-		for(unsigned int j= 0;j<T; j++){
-			min = ((double) j)*1./T;
-			max = ((double)j+1)*1/T;
+			min = (double)  k  *1./T; 
+			max = (double)(k+1)*1./T;
+
+			// Check for number of hits on k-interval
 			for(unsigned int i = 0; i < n; i++){
-				if(random[i] > min && random[i] < max) ni[j] += 1;
+				if(random[i] > min){
+					if(random[i] < max){
+						ni[k] += 1;
+					}
+				}
 			}
 			
-			sum = 0;
-			for(unsigned int i = 0; i < T; i++){
-				sum += pow((ni[j] - (n/T)), 2)/(n/T);
-			}
-			chi[j] = sum;
-		} 
+		}
+
+		// Sum the chi for each cell
+		sum = 0;
+		for(unsigned int i = 0; i < T; i++){
+			sum += (ni[i]-expected)*(ni[i]-expected)/expected;
+		}
+		chi[j] = sum;
 	}
 	
 	fstream fout3;

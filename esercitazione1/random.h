@@ -29,7 +29,7 @@ public:
   double Rannyu(void);
   double Rannyu(double min, double max);
   double Gauss(double mean, double sigma);
-  double Lorentz(double mu, double gamma);
+  double Lorentz(double mean, double gamma);
   double Exponential(double lambda);
 };
 

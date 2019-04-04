@@ -16,6 +16,13 @@ double funzione(double r){
 	return M_PI*cos(M_PI*r/2)/2;
 };
 
+double funzione_imp_samp(double r){
+	double y = M_PI*r/2.;
+
+	return 5*M_PI*cos(y)/(12*(1. - pow(y,2)/2.));
+
+}
+
 int main(int argc, char* argv[]){
 
 	// RNG SETUP ----------------------------------------------
@@ -111,9 +118,9 @@ int main(int argc, char* argv[]){
 	// --------------------------------------------------------------
 
 	
-	double rs[M];	    // Random numbers to use, importance sampled to cos(pi*x/2) 
+	double rs[M]; 
 	for(unsigned int i = 0; i < M; i++){	
-		rs[i] = rnd.Cosine(0,1); 
+		rs[i] = rnd.CosineAR(M_PI/2); 
 	}
 
 	
@@ -121,7 +128,7 @@ int main(int argc, char* argv[]){
 		sum = 0;
 		for(unsigned int j = 0; j < L; j++){
 			k = j+i*L;
-			sum += funzione(rs[k]);
+			sum += funzione_imp_samp(rs[k]);
 		}
 		ave[i] = sum/L;
 		ave2[i] = pow(ave[i],2);

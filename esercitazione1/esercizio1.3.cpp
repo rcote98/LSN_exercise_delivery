@@ -39,21 +39,27 @@ int main(int argc, char* argv[]){
 	} else cerr << "PROBLEM: Unable to open seed.in" << endl;
 
 	// ----------------------------------------------------------
-	// pi = 2L/Pd
+	/*
+		BUFFON'S PROBLEM SIMULATION
+
+		Basically, the way the simulation works is by chosing a point
+		p between 0 and d, and then sampling two random number x and y
+		to choose a direction in 2D space without the need to use PI and
+		then use that direction to project onto our original line.
+		
+		Then PI is calculated each block with the formula:
+		PI = (2*Length)/(Probability*d) = (2*Throws*Length)/(Hits*d)
+
+	*/	
+
 	unsigned int M = 300000;         // Total number of throws
 	unsigned int N = 100;            // Number of blocks
 	unsigned int L = int(M/N);       // Number of throws in each block
 	
-	double r[2*M];	    // Random numbers to use
-	for(unsigned int i = 0; i < 2*M; i++){	
+	double* r = new double[3*M];	 // Random numbers to use
+	for(unsigned int i = 0; i < 3*M; i++){	
 		r[i] = rnd.Rannyu(); 
 	}
-
-	double throws[N];
-	for(unsigned int i = 0; i < N; i++){	
-		throws[i] = (i+1)*L;
-	}
-	
 
 	double ave[N];       // Averages vector
 	double ave2[N];      // Squared Averages Vector
@@ -62,28 +68,35 @@ int main(int argc, char* argv[]){
 	double err_prog[N];  // Statistical uncertainty
 
 
-	double d = 1.5;
-	double len = 1;
+	double d = 1.5;      // Distance between sticks
+	double len = 1;      // Length of the sticks
 
-	double p;
-	double x;
+	double p;            // random point between 0 and d
+	double x, y;	     // random x, y points between [-1,1]
+	double v;            // vector proyection ont original line
 	
-	double cpi;
-	double sum;
-	unsigned int hits = 1;
-	unsigned int k;
+	double cpi;          // Calculated pi value
+	double sum;          // Block sum for statistics
+
+	unsigned int hits = 1; // Number of hits (starts in 1 to avoid division by zero)
+	unsigned int k;        // Index used for the block structure
+	
 	for(unsigned int i = 0; i<N; i++){
 		sum = 0;
 		for(unsigned int j = 0; j < L; j++){
+			
 			k = j+i*L;
 			
-			p = d + r[k];
-			x = -len + 2*len*r[k+M];
+			p = r[k] * d;
+			x = r[k +   M];
+			y = r[k + 2*M];
 
-			if(x>0){
-				if( fmod(p+x, d) < x) hits++;
+			v = len * y/sqrt(pow(x,2) + pow(y,2));
+
+			if(v>0){
+				if(v > (d-p)) hits++;
 			} else {
-				if( d- (fmod(p+x, d) < x) hits++;
+				if(v > p) hits++;
 			};
 			
 			cpi = (2*len*k)/(hits*d);
@@ -109,7 +122,7 @@ int main(int argc, char* argv[]){
 
 	fout1 << "throws, sum_prog, err_prog" << endl;
 	for(unsigned int i = 0; i < N; i++){
-		fout1 << throws[i] << ", " << sum_prog[i] << ", " << err_prog[i] 
+		fout1 << (i+1)*L << ", " << sum_prog[i] << ", " << err_prog[i] 
 		<< endl;
 	}
 	
