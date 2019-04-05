@@ -23,7 +23,7 @@ The raw data will be stored in conveniently named .csv files. To view them, exec
 
 ## Exercises
 
-- Exercise 1: Testing the RNG, generating distributions, Buffon's experiment.
-- Exercise 2: Monte Carlo integration, importance sampling
-- Exercise 3: European option Call/Put value prediction
-- Exercise 4:
+- [DONE] Exercise 1: Testing the RNG, generating distributions, Buffon's experiment.
+- [DONE] Exercise 2: Monte Carlo integration, importance sampling
+- [DONE] Exercise 3: European option Call/Put price prediction with Monte Carlo methods.
+- Exercise 4: Molecular Dynamics simulation of a Lenanrd-Jones model using the Verlet algorithm.
