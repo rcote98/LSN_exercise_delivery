@@ -91,8 +91,6 @@ int main(int argc, char* argv[]){
 
 			c_price = exp(-r*T)*max(0.,St-K);
 
-			//c_price = call_option_price(t,St, sigma, r, K, T);
-
 			sum += c_price;
 		}
 		ave[i] = sum/L;
