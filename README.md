@@ -1,6 +1,6 @@
 # LSN Exercise Delivery
 
-Repository created to deliver the exercises for the subject "Laboratorio di Simulazione Numerica" of the Physics Department in the University of Milan.
+Repository created to deliver the exercises for the subject "Laboratorio di Simulazione Numerica" of the University of Milan's Physics Department.
 
 ## Requirements
 
