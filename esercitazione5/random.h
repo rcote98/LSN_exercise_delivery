@@ -7,47 +7,35 @@
 _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 *****************************************************************
 *****************************************************************/
-#include <string>
 
-using namespace std;
+#ifndef __Random__
+#define __Random__
 
-//parameters, observables
-const int m_props=5;
-int n_props;
-int iv,ik,it,ie,ip;
-double stima_pot, stima_kin, stima_etot, stima_temp;
+class Random {
 
-// averages
-double acc,att;
+private:
+  int m1,m2,m3,m4,l1,l2,l3,l4,n1,n2,n3,n4;
 
-//configuration
-const int m_part=108;
-double x[m_part],y[m_part],z[m_part],xold[m_part],yold[m_part],zold[m_part];
-double vx[m_part],vy[m_part],vz[m_part];
-double * etot_ave, * ekin_ave, * epot_ave, * temp_ave, * pres_ave;
+protected:
 
-// thermodynamical state
-int npart;
-double energy,temp,vol,rho,box,rcut;
+public:
+  // constructors
+  Random();
+  // destructor
+  ~Random();
+  // methods
+  void SetRandom(int * , int, int);
+  void SaveSeed();
+  double Rannyu(void);
+  double Rannyu(double min, double max);      // uniform samples
+  double Gauss(double mean, double sigma);    // gaussian samples
+  double Lorentz(double mu, double gamma);    // lorentzian samples
+  double Exponential(double lambda);          // exponential samples
+  double Angle();                             // angle from 0 to 2pi
+};
 
-// simulation
-string sim_name;
-bool RESTART, REWRITE;
-unsigned int nstep, iprint, nblocks;
-int seed;
-double delta;
+#endif // __Random__
 
-//functions
-void Input(void);
-void Input(string sim_name);
-void Move(void);
-void StatCalc(void);
-void ConfFinal(void);
-void ConfXYZ(int);
-void Measure(void);
-double Force(int, int);
-double Pbc(double);
-double error(double ave, double ave2, int n);
 /****************************************************************
 *****************************************************************
     _/    _/  _/_/_/  _/       Numerical Simulation Laboratory

@@ -30,7 +30,7 @@ int main(){
 		 }
 		 
 	}
-	StatCalc();
+	StatCalc();                  //Stats calculation
 	ConfFinal();				 //Write final configuration to restart
 
 	return 0;
@@ -327,7 +327,7 @@ void Measure(){ //Properties measurement
 	Etot.open("output_etot.dat",ios::app);
 
 	v = 0.0; //reset observables
-	t = 0.0;
+	t = 0.0; 
 
 	//cycle over pairs of particles
 	for (int i=0; i<npart-1; ++i){
@@ -353,7 +353,7 @@ void Measure(){ //Properties measurement
 
 
 	//Kinetic energy
-	for (int i=0; i<npart; ++i) 
+	for (int i=0; i<npart; ++i){
 	
 		t += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
 	 
@@ -373,13 +373,82 @@ void Measure(){ //Properties measurement
 		Etot.close();
 
 		return;
+	}
 }
 
 void StatCalc(void){
 
-	double L = (int) nstep/nblocks;
-	int* x = new int[nblocks];
-	for(int i = 0; i < nblocks; i++){
+
+	ifstream Epot, Ekin, Etot, Temp;//, Pres;
+
+	Epot.open("output_epot.dat");
+	Ekin.open("output_ekin.dat");
+	Temp.open("output_temp.dat");
+	Etot.open("output_etot.dat");
+	//Pres.open("output_pres.dat");
+
+	unsigned int nmeasures = nstep/iprint;
+
+	unsigned int k;
+	double L = nmeasures/nblocks;
+	double* sum = new double[4];
+
+
+	double etot_meas[nmeasures];
+	double ekin_meas[nmeasures];
+	double epot_meas[nmeasures];
+	double temp_meas[nmeasures];
+	//double pres_meas[nmeasures];
+
+	for(unsigned int i = 0; i < nmeasures; i++)
+	{
+			Epot >> epot_meas[i];
+			Ekin >> ekin_meas[i];
+			Temp >> temp_meas[i];
+			Etot >> etot_meas[i];
+
+			cout << epot_meas[i] << endl;
+	}
+	
+
+
+	etot_ave = new double[nblocks];
+	epot_ave = new double[nblocks];
+	ekin_ave = new double[nblocks];
+	temp_ave = new double[nblocks];
+	pres_ave = new double[nblocks];
+
+	for(unsigned int i = 0; i<nblocks; i++){
+		
+		for(unsigned int j = 0; j < 4; j++) sum[j] = 0;
+
+
+		for(unsigned int j = 0; j < L; j++){
+
+			k = j+1;
+
+			sum[0] += epot_meas[k];
+			sum[1] += ekin_meas[k];
+			sum[2] += temp_meas[k];
+			sum[3] += etot_meas[k];
+		}
+
+		epot_ave[i] = sum[0]/L;
+		ekin_ave[i] = sum[1]/L;
+		temp_ave[i] = sum[2]/L;
+		etot_ave[i] = sum[3]/L;
+
+	}
+
+	Epot.close();
+	Ekin.close();
+	Temp.close();
+	Etot.close();
+	//Pres.close()
+
+	
+	unsigned int x[nblocks];
+	for(unsigned int i = 0; i < nblocks; i++){
 		x[i] = (i+1)*L;
 	};
 	
@@ -410,7 +479,7 @@ void StatCalc(void){
 	}
 	Stats.close();
 
-	for(int i = 0; i < nblocks; i++){
+	for(unsigned int i = 0; i < nblocks; i++){
 		sum_prog[i]=0;
 		su2_prog[i]=0;
 		err_prog[i]=0;
@@ -435,7 +504,7 @@ void StatCalc(void){
 	}
 	Stats.close();
 
-	for(int i = 0; i < nblocks; i++){
+	for(unsigned int i = 0; i < nblocks; i++){
 		sum_prog[i]=0;
 		su2_prog[i]=0;
 		err_prog[i]=0;
@@ -460,7 +529,7 @@ void StatCalc(void){
 	}
 	Stats.close();
 
-	for(int i = 0; i < nblocks; i++){
+	for(unsigned int i = 0; i < nblocks; i++){
 		sum_prog[i]=0;
 		su2_prog[i]=0;
 		err_prog[i]=0;
@@ -485,7 +554,7 @@ void StatCalc(void){
 	}
 	Stats.close();
 
-	for(int i = 0; i < nblocks; i++){
+	for(unsigned int i = 0; i < nblocks; i++){
 		sum_prog[i]=0;
 		su2_prog[i]=0;
 		err_prog[i]=0;
