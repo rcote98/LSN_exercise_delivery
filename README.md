@@ -18,7 +18,7 @@ To view the solutions, compile the C++ code and execute all the .exe files gener
   make
   ./esercizio[...].exe
  ```
-From Exercise 4 onwards, due to the incresing simulation complexity it may be required to launch a simulation such as:
+From Exercise 4 onwards, due to the incresing complexity of the simulations it may be required to launch a simulation script such as:
   ```bash
   ./simulate.sh
   ```
