@@ -28,5 +28,5 @@ The raw data will be stored in conveniently named .csv files. To view them, exec
 - [DONE] Exercise 3: European option Call/Put price prediction with Monte Carlo methods.
 - Exercise 4: Molecular Dynamics simulation using the Lennard-Jones model plus a Verlet algorithm.
 - [DONE] Exercise 5: Sampling hidrogenic wave functions with the Metropolis algorithm.
-- [DONE] Exercise 6: 1D Ising Model Monte Carlo simulation
+- [DONE] Exercise 6: 1-D Ising Model Monte Carlo simulation
 - Exercise 7: Molecular Dynamics simulation using the Lennard-Jones model plus the Metropolis algorithm.
