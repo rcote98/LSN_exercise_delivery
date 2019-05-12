@@ -12,13 +12,20 @@ Repository created to deliver the exercises for the subject "Laboratorio di Simu
 
 In general, each folder contains the C++ code plus two IPython notebooks, one with the exercises named "LSN_Exercises_##" plus one with the solutions called "esercitazione#", where # is the exercise number.
 
-To view the solutions, compile the C++ code and execute all the .exe files generated with
+To view the solutions, compile the C++ code and execute all the .exe files generated with:
   ```bash
   cd [exercise session directory]
   make
   ./esercizio[...].exe
+ ```
+From Exercise 4 onwards, due to the incresing simulation complexity it may be required to launch a simulation such as:
+  ```bash
+  ./simulate.sh
   ```
-The raw data will be stored in conveniently named .csv files. To view them, execute all the commands within the notebook in order (many variable names are reused for convenience).
+
+The raw data will be stored in conveniently named _.csv_, _.out_ or _.dat_ files, located either in the root folder of the exercise or within a dedicated _sim_data_ folder. 
+
+To view the simulation results, execute all the commands within the notebook in order (many variable names are reused for convenience).
 
 
 ## Exercises
