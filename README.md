@@ -4,6 +4,7 @@ Repository created to deliver the exercises for the subject "Laboratorio di Simu
 
 ## Requirements
 
+- Linux OS (developed with Ubuntu 18.10)
 - g++ C++ compiler
 - Python 3.* with numpy, scipy and maplotlib modules installed
 - Jupyter Notebook
