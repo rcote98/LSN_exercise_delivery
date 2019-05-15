@@ -35,7 +35,7 @@ To view the simulation results, execute all the commands within the notebook in 
 - [DONE] Exercise 1: Testing the RNG, generating distributions, Buffon's experiment.
 - [DONE] Exercise 2: Monte Carlo integration, importance sampling
 - [DONE] Exercise 3: European option Call/Put price prediction with Monte Carlo methods.
-- Exercise 4: Molecular Dynamics simulation using the Lennard-Jones model plus a Verlet algorithm.
+- [DONE] Exercise 4: Molecular Dynamics simulation using the Lennard-Jones model plus a Verlet algorithm.
 - [DONE] Exercise 5: Sampling hidrogenic wave functions with the Metropolis algorithm.
 - [DONE] Exercise 6: 1-D Ising Model Monte Carlo simulation.
 - Exercise 7: Molecular Dynamics simulation using the Lennard-Jones model plus the Metropolis algorithm.
