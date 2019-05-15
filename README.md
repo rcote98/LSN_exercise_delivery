@@ -39,6 +39,9 @@ To view the simulation results, execute all the commands within the notebook in 
 - [DONE] Exercise 5: Sampling hidrogenic wave functions with the Metropolis algorithm.
 - [DONE] Exercise 6: 1-D Ising Model Monte Carlo simulation.
 - Exercise 7: Molecular Dynamics simulation using the Lennard-Jones model plus the Metropolis algorithm.
+- Exercise 8:
+- Exercise 9:
+- Exercise 10:
 
 <p align="center"> 
 <img src="d_state.png">
