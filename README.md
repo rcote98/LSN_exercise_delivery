@@ -1,9 +1,7 @@
 # LSN Exercise Delivery Repository
 
 Repository created to deliver the exercises for the subject "Laboratorio di Simulazione Numerica" of the University of Milan's Physics Department.
-<p align="center"> 
-<img src="d_state.png">
-</p>
+
 
 ## Requirements
 
@@ -42,4 +40,9 @@ To view the simulation results, execute all the commands within the notebook in 
 - [DONE] Exercise 6: 1-D Ising Model Monte Carlo simulation.
 - Exercise 7: Molecular Dynamics simulation using the Lennard-Jones model plus the Metropolis algorithm.
 
-[pic]: d_state.png "Hidrogen atom P-base state"
+<p align="center"> 
+<img src="d_state.png">
+</p>
+<p align="center"> 
+Hydrogenic D Wavefunction
+</p>
