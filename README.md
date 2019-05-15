@@ -2,7 +2,9 @@
 
 Repository created to deliver the exercises for the subject "Laboratorio di Simulazione Numerica" of the University of Milan's Physics Department.
 
-![alt text][pic]
+<p align="center"> 
+<img src="d_state.png">
+</p>
 
 ## Requirements
 
