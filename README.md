@@ -2,6 +2,8 @@
 
 Repository created to deliver the exercises for the subject "Laboratorio di Simulazione Numerica" of the University of Milan's Physics Department.
 
+![alt text][pic]
+
 ## Requirements
 
 - g++ C++ compiler
@@ -28,3 +30,5 @@ The raw data will be stored in conveniently named .csv files. To view them, exec
 - [DONE] Exercise 3: European option Call/Put price prediction with Monte Carlo methods.
 - Exercise 4: Molecular Dynamics simulation using the Lennard-Jones model plus a Verlet algorithm.
 - [DONE] Exercise 5: Sampling hidrogenic wave functions with the Metropolis algorithm.
+
+[pic]: d_state.png "Hidrogen atom P-base state"

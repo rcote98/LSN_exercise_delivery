@@ -70,7 +70,7 @@ cp setups/config.fcc config.0
 
 ./esercizio4.exe
 
-mkdir sim_data/liquid
+mkdir -p sim_data/liquid
 mv output.*.dat sim_data/liquid/
 
 
@@ -118,7 +118,7 @@ cp setups/config.fcc config.0
 
 ./esercizio4.exe
 
-mkdir sim_data/gas
+mkdir -p sim_data/gas
 mv output.*.dat sim_data/gas/
 
 echo
@@ -159,6 +159,7 @@ echo "Restoring default simulation parameters..."
 
 cp setups/input.def input.dat
 cp setups/config.fcc config.0
+rm config.0.prev
 
 echo "DONE!"
 

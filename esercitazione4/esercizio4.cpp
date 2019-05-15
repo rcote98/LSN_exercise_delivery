@@ -8,11 +8,6 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 *****************************************************************
 *****************************************************************/
 
-#include <stdlib.h>
-#include <iostream>  
-#include <fstream>      
-#include <cmath>     
-
 #include "esercizio4.h"
 
 using namespace std;
@@ -24,15 +19,16 @@ int main(){
 
   Input();             //Inizialization
   int nconf = 1;
-  for(int istep=1; istep <= nstep; ++istep){
+  for(unsigned int istep=1; istep <= nstep; ++istep){
      Move();           //Move particles with Verlet algorithm
      if(istep%iprint == 0) cout << "Number of time-steps: " << istep << endl;
-     if(istep%10 == 0){
+     if(istep%measure_step == 0){
         Measure();     //Properties measurement
         //ConfXYZ(nconf);//Write actual configuration in XYZ format //Commented to avoid "filesystem full"! 
         nconf += 1;
      }
   }
+  Averages();          //Data blocking implementation
   ConfFinal();         //Write final configuration to restart
 
   return 0;
@@ -69,7 +65,6 @@ void Input(void){ //Prepare all stuff for the simulation
   // Simulation Setup -----------------------------------------
 
   ifstream ReadInput,ReadConf;
-  double ep, ek, pr, et, vir;
 
   if(verbose){ // you know the drill...
     cout << "Classic Lennard-Jones fluid        " << endl;
@@ -87,6 +82,7 @@ void Input(void){ //Prepare all stuff for the simulation
   ReadInput >> rcut;
   ReadInput >> delta;
   ReadInput >> nstep;
+  ReadInput >> nblocks;
   ReadInput >> iprint;
   ReadInput >> RESTART;
   ReadInput.close();
@@ -95,28 +91,23 @@ void Input(void){ //Prepare all stuff for the simulation
   box = pow(vol,1.0/3.0);
 
   // Simulation Config
+  cout << "Temperature = " << temp << endl;
   cout << "Number of particles = " << npart << endl;
   cout << "Density of particles = " << rho << endl;
   cout << "Volume of the simulation box = " << vol << endl;
   cout << "Edge of the simulation box = " << box << endl;
   cout << "Time step = " << delta << endl;
-  cout << "Number of steps = " << nstep << endl << endl;
+  cout << "Number of steps = " << nstep << endl;
+  if(RESTART) cout << "Starting simulation from zero..." << endl << endl;
+  else cout << "Resuming simulation from previous state..." << endl << endl; 
+  
 
-  // Prepare array for measurements
-  iv = 0; //Potential energy
-  ik = 1; //Kinetic energy
-  ie = 2; //Total energy
-  it = 3; //Temperature
-  ip = 4; //Pressure
-
-  n_props = 4; //Number of observables
-
-  if (RESTART) {
+  if (RESTART) { // Simulation beginning from zero
 
     // Read initial configuration
     cout << "Read initial configuration from file config.0 " << endl << endl;
     ReadConf.open("config.0");
-    for (int i=0; i<npart; ++i){
+    for (unsigned int i=0; i<npart; ++i){
       ReadConf >> x[i] >> y[i] >> z[i];
       x[i] = x[i] * box;
       y[i] = y[i] * box;
@@ -128,7 +119,7 @@ void Input(void){ //Prepare all stuff for the simulation
     cout << "Prepare random velocities with center of mass velocity equal to zero " << endl << endl;
     double sumv[3] = {0.0, 0.0, 0.0};
 
-    for (int i=0; i<npart; ++i){
+    for (unsigned int i=0; i<npart; ++i){
       vx[i] = rnd->Rannyu() - 0.5;
       vy[i] = rnd->Rannyu() - 0.5;
       vz[i] = rnd->Rannyu() - 0.5;
@@ -138,10 +129,10 @@ void Input(void){ //Prepare all stuff for the simulation
       sumv[2] += vz[i];
     }
 
-    for (int idim=0; idim<3; ++idim) sumv[idim] /= (double)npart;
+    for (unsigned int idim=0; idim<3; ++idim) sumv[idim] /= (double)npart;
 
     double sumv2 = 0.0, fs;
-    for (int i=0; i<npart; ++i){
+    for (unsigned int i=0; i<npart; ++i){
       vx[i] = vx[i] - sumv[0];
       vy[i] = vy[i] - sumv[1];
       vz[i] = vz[i] - sumv[2];
@@ -151,7 +142,7 @@ void Input(void){ //Prepare all stuff for the simulation
     sumv2 /= (double)npart;
 
     fs = sqrt(3 * temp / sumv2);   // fs = velocity scale factor 
-    for (int i=0; i<npart; ++i){
+    for (unsigned int i=0; i<npart; ++i){
       vx[i] *= fs;
       vy[i] *= fs;
       vz[i] *= fs;
@@ -162,12 +153,12 @@ void Input(void){ //Prepare all stuff for the simulation
     }
 
 
-  } else {
+  } else { // Simulation continuing from restored state
 
-    // Read initial configuration
-    cout << "Reading x[t=0] configuration from file config.0 " << endl << endl;
+    // Read x(t) configuration
+    cout << "Reading x(t) configuration from file config.0 " << endl << endl;
     ReadConf.open("config.0");
-    for (int i=0; i<npart; ++i){
+    for (unsigned int i=0; i<npart; ++i){
       ReadConf >> x[i] >> y[i] >> z[i];
       x[i] = x[i] * box;
       y[i] = y[i] * box;
@@ -175,41 +166,101 @@ void Input(void){ //Prepare all stuff for the simulation
     }
     ReadConf.close();
 
-    double x_prev[npart];
-    double y_prev[npart];
-    double z_prev[npart];
-
-    // Read initial previous configuration
-    cout << "Reading x[t=(0-dt)] configuration from file config.0.prev " << endl << endl;
+    // Read x(t-dt) configuration
+    cout << "Reading x(t-dt) configuration from file config.0.prev " << endl << endl;
     ReadConf.open("config.0.prev");
-    for (int i=0; i<npart; ++i){
-      ReadConf >> x_prev[i] >> y_prev[i] >> z_prev[i];
-      x_prev[i] = x_prev[i] * box;
-      y_prev[i] = y_prev[i] * box;
-      z_prev[i] = z_prev[i] * box;
+    for (unsigned int i=0; i<npart; ++i){
+      ReadConf >> xold[i] >> yold[i] >> zold[i];
+      xold[i] = xold[i] * box;
+      yold[i] = yold[i] * box;
+      zold[i] = zold[i] * box;
     }
     ReadConf.close();
 
-    // DO THIS SHIT 
+    // Calculate x(t+dt) and v(t)
 
 
+    double xnew[npart], ynew[npart], znew[npart]; 
+    double vxnew[npart], vynew[npart], vznew[npart]; 
+    double fx[m_part], fy[m_part], fz[m_part];
 
+    unsigned int recalcs = 20; // recalcs of the previous position
+
+    for(unsigned int k = 0; k < recalcs; k++){
+
+      for(unsigned int i=0; i<npart; ++i){ //Force acting on particle i
+        fx[i] = Force(i,0);
+        fy[i] = Force(i,1);
+        fz[i] = Force(i,2);
+      }
+
+      for(unsigned int i=0; i<npart; ++i){ //Verlet integration scheme
+
+        xnew[i] = Pbc( 2.0 * x[i] - xold[i] + fx[i] * pow(delta,2) );
+        ynew[i] = Pbc( 2.0 * y[i] - yold[i] + fy[i] * pow(delta,2) );
+        znew[i] = Pbc( 2.0 * z[i] - zold[i] + fz[i] * pow(delta,2) );
+
+        vxnew[i] = Pbc(xnew[i] - xold[i])/(2.0 * delta);
+        vynew[i] = Pbc(ynew[i] - yold[i])/(2.0 * delta);
+        vznew[i] = Pbc(znew[i] - zold[i])/(2.0 * delta);
+      }
+
+      double sumv[3] = {0.0, 0.0, 0.0};
+      for (unsigned int i=0; i<npart; ++i){
+        sumv[0] += vxnew[i];
+        sumv[1] += vynew[i];
+        sumv[2] += vznew[i];
+      }
+      
+      for (unsigned int idim=0; idim<3; ++idim) sumv[idim] /= (double)npart;
+
+      double sumv2 = 0.0, fs;
+      for (unsigned int i=0; i<npart; ++i){
+        vxnew[i] = vxnew[i] - sumv[0];
+        vynew[i] = vynew[i] - sumv[1];
+        vznew[i] = vznew[i] - sumv[2];
+
+        sumv2 += vxnew[i]*vxnew[i] + vynew[i]*vynew[i] + vznew[i]*vznew[i];
+      }
+
+      sumv2 /= (double)npart;
+
+      fs = sqrt(3 * temp / sumv2);   // fs = velocity scale factor 
+      for (unsigned int i=0; i<npart; ++i){
+        vxnew[i] *= fs;
+        vxnew[i] *= fs;
+        vznew[i] *= fs;
+
+        xold[i] = xnew[i] - vxnew[i]*2*delta;
+        yold[i] = ynew[i] - vynew[i]*2*delta;
+        zold[i] = znew[i] - vznew[i]*2*delta;
+      }
+
+    }
+
+    Move();
+
+    double k=0.0;
+    for (unsigned int i=0; i<npart; ++i) k += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
+    stima_temp = (2.0 / 3.0) * k/(double)npart;
+
+    cout << "Temperature after adjustment: " << stima_temp << endl << endl;
 
   }
    return;
 }
 
-
 void Move(void){ //Move particles with Verlet algorithm
-  double xnew, ynew, znew, fx[m_part], fy[m_part], fz[m_part];
+  double xnew, ynew, znew; 
+  double fx[m_part], fy[m_part], fz[m_part];
 
-  for(int i=0; i<npart; ++i){ //Force acting on particle i
+  for(unsigned int i=0; i<npart; ++i){ //Force acting on particle i
     fx[i] = Force(i,0);
     fy[i] = Force(i,1);
     fz[i] = Force(i,2);
   }
 
-  for(int i=0; i<npart; ++i){ //Verlet integration scheme
+  for(unsigned int i=0; i<npart; ++i){ //Verlet integration scheme
 
     xnew = Pbc( 2.0 * x[i] - xold[i] + fx[i] * pow(delta,2) );
     ynew = Pbc( 2.0 * y[i] - yold[i] + fy[i] * pow(delta,2) );
@@ -230,11 +281,11 @@ void Move(void){ //Move particles with Verlet algorithm
   return;
 }
 
-double Force(int ip, int idir){ //Compute forces as -Grad_ip V(r)
+double Force(unsigned int ip, unsigned int idir){ //Compute forces as -Grad_ip V(r)
   double f=0.0;
   double dvec[3], dr;
 
-  for (int i=0; i<npart; ++i){
+  for (unsigned int i=0; i<npart; ++i){
     if(i != ip){
       dvec[0] = Pbc( x[ip] - x[i] );  // distance ip-i in pbc
       dvec[1] = Pbc( y[ip] - y[i] );
@@ -253,22 +304,23 @@ double Force(int ip, int idir){ //Compute forces as -Grad_ip V(r)
 }
 
 void Measure(){ //Properties measurement
-  int bin;
-  double v, t, vij;
+  double v, p, t, vij, pij;
   double dx, dy, dz, dr;
-  ofstream Epot, Ekin, Etot, Temp;
+  ofstream Epot, Ekin, Etot, Temp, Pres;
 
   Epot.open("output.epot.dat",ios::app);
   Ekin.open("output.ekin.dat",ios::app);
   Temp.open("output.temp.dat",ios::app);
   Etot.open("output.etot.dat",ios::app);
+  Pres.open("output.pres.dat",ios::app);
 
   v = 0.0; //reset observables
   t = 0.0;
+  p = 0.0;
 
   //cycle over pairs of particles
-  for (int i=0; i<npart-1; ++i){
-    for (int j=i+1; j<npart; ++j){
+  for (unsigned int i=0; i<npart-1; ++i){
+    for (unsigned int j=i+1; j<npart; ++j){
 
      dx = Pbc( x[i] - x[j] );
      dy = Pbc( y[i] - y[j] );
@@ -278,32 +330,122 @@ void Measure(){ //Properties measurement
      dr = sqrt(dr);
 
      if(dr < rcut){
-       vij = 4.0/pow(dr,12) - 4.0/pow(dr,6);
-       //Potential energy
-       v += vij;
+			vij = 4.0/pow(dr,12) - 4.0/pow(dr,6);
+			pij = 48.0*(pow(dr,-12) - 0.5*pow(dr,-6));
+
+			//Potential energy
+			v += vij;
+
+			// Pressure
+			p += pij;
      }
     }          
   }
 
   //Kinetic energy
-  for (int i=0; i<npart; ++i) t += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
+  for (unsigned int i=0; i<npart; ++i) t += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
    
   stima_pot = v/(double)npart; //Potential energy
   stima_kin = t/(double)npart; //Kinetic energy
   stima_temp = (2.0 / 3.0) * t/(double)npart; //Temperature
-  stima_etot = (t+v)/(double)npart; //Total enery
+  stima_etot = (t+v)/(double)npart; //Total energy
+  stima_pres = (rho*(2.0/3.0)*t + p/(3*v))/(double)npart; // Pressure
 
   Epot << stima_pot  << endl;
   Ekin << stima_kin  << endl;
   Temp << stima_temp << endl;
   Etot << stima_etot << endl;
+  Pres << stima_pres << endl;
 
   Epot.close();
   Ekin.close();
   Temp.close();
   Etot.close();
+  Pres.close();
 
   return;
+}
+
+void Averages(void){
+
+
+	ifstream Epot, Ekin, Etot, Temp, Pres;
+  double *etot_ave, *epot_ave, *ekin_ave, *temp_ave, *pres_ave; 
+
+	Epot.open("output.epot.dat");
+	Ekin.open("output.ekin.dat");
+	Temp.open("output.temp.dat");
+	Etot.open("output.etot.dat");
+	Pres.open("output.pres.dat");
+
+	unsigned int nmeasures = nstep/measure_step;
+
+	unsigned int k;
+	double L = nmeasures/nblocks;
+	double* sum = new double[4];
+
+
+	double etot_meas[nmeasures];
+	double ekin_meas[nmeasures];
+	double epot_meas[nmeasures];
+	double temp_meas[nmeasures];
+	double pres_meas[nmeasures];
+
+	for(unsigned int i = 0; i < nmeasures; i++)
+	{
+			Epot >> epot_meas[i];
+			Ekin >> ekin_meas[i];
+			Temp >> temp_meas[i];
+			Etot >> etot_meas[i];
+			Pres >> pres_meas[i];
+	}
+	
+	etot_ave = new double[nblocks];
+	epot_ave = new double[nblocks];
+	ekin_ave = new double[nblocks];
+	temp_ave = new double[nblocks];
+	pres_ave = new double[nblocks];
+
+	for(unsigned int i = 0; i<nblocks; i++){
+		
+		for(unsigned int j = 0; j < 5; j++) sum[j] = 0;
+
+
+		for(unsigned int j = 0; j < L; j++){
+
+			k = j+i*L;
+
+			sum[0] += epot_meas[k];
+			sum[1] += ekin_meas[k];
+			sum[2] += temp_meas[k];
+			sum[3] += etot_meas[k];
+			sum[4] += pres_meas[k];
+		}
+
+		epot_ave[i] = sum[0]/L;
+		ekin_ave[i] = sum[1]/L;
+		temp_ave[i] = sum[2]/L;
+		etot_ave[i] = sum[3]/L;
+		pres_ave[i] = sum[4]/L;
+
+
+	}
+
+	Epot.close();
+	Ekin.close();
+	Temp.close();
+	Etot.close();
+	Pres.close();
+
+	data_blocking(nblocks, etot_ave, "output.etot_ave.dat");
+	data_blocking(nblocks, epot_ave, "output.epot_ave.dat");
+	data_blocking(nblocks, ekin_ave, "output.ekin_ave.dat");
+	data_blocking(nblocks, temp_ave, "output.temp_ave.dat");
+	data_blocking(nblocks, pres_ave, "output.pres_ave.dat");
+
+  cout << endl << "Final temperature " << temp_ave[nblocks-1] << endl << endl;
+
+
 }
 
 void ConfFinal(void){ //Write final configuration
@@ -312,17 +454,15 @@ void ConfFinal(void){ //Write final configuration
   cout << "Printing x(t-dt) configuration to file config.final.prev " << endl << endl;
   WriteConf.open("config.final.prev");
 
-  for (int i=0; i<npart; ++i){
-    WriteConf << x[i]/box << "   " <<  y[i]/box << "   " << z[i]/box << endl;
+  for (unsigned int i=0; i<npart; ++i){
+    WriteConf << xold[i]/box << "   " <<  yold[i]/box << "   " << zold[i]/box << endl;
   }
   WriteConf.close();
-
-  Move();
 
   cout << "Printing x(t) configuration to file config.final " << endl;
   WriteConf.open("config.final");
 
-  for (int i=0; i<npart; ++i){
+  for (unsigned int i=0; i<npart; ++i){
     WriteConf << x[i]/box << "   " <<  y[i]/box << "   " << z[i]/box << endl;
   }
   WriteConf.close();
@@ -336,7 +476,7 @@ void ConfXYZ(int nconf){ //Write configuration in .xyz format
   WriteXYZ.open("frames/config_" + to_string(nconf) + ".xyz");
   WriteXYZ << npart << endl;
   WriteXYZ << "This is only a comment!" << endl;
-  for (int i=0; i<npart; ++i){
+  for (unsigned int i=0; i<npart; ++i){
     WriteXYZ << "LJ  " << Pbc(x[i]) << "   " <<  Pbc(y[i]) << "   " << Pbc(z[i]) << endl;
   }
   WriteXYZ.close();
@@ -345,6 +485,43 @@ void ConfXYZ(int nconf){ //Write configuration in .xyz format
 double Pbc(double r){  //Algorithm for periodic boundary conditions with side L=box
     return r - box * rint(r/box);
 }
+
+void data_blocking(unsigned int N, double* ave, string fname){
+
+	double * sum_prog = new double[N];
+	double * su2_prog = new double[N];
+	double * err_prog = new double[N];
+
+	double av;
+	for(unsigned int i = 0; i<N; i++){
+		for(unsigned int j=0; j<i+1; j++){
+			av = ave[j];
+			sum_prog[i] += av;
+			su2_prog[i] += pow(av,2);
+		}
+		sum_prog[i] = sum_prog[i]/(i+1);
+		su2_prog[i] = su2_prog[i]/(i+1);
+		err_prog[i] = error(sum_prog[i], su2_prog[i] ,i);
+	}
+
+	fstream fout;
+	fout.open(fname, fstream::out);
+	fout << "block, sum_prog, err_prog" << endl;
+	for(unsigned int i = 0; i < N; i++){
+		fout << i+1 << ", " << sum_prog[i] << ", " << err_prog[i] << endl;
+	}
+	fout.close();
+
+	delete sum_prog;
+	delete su2_prog;
+	delete err_prog;
+
+}
+
+double error(double av, double av2, int n){
+	if (n==0) return 0;
+	else return sqrt((av2 - av*av)/n);
+};
 
 /****************************************************************
 *****************************************************************
