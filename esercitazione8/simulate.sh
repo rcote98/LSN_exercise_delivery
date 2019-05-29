@@ -25,7 +25,7 @@ echo " "
 cp setups/input.solid input.dat
 cp setups/config.fcc config.0
 
-./esercizio7.exe
+./Monte_Carlo_NVT.exe
 
 mkdir sim_data/solid
 mv output*.0 sim_data/solid/
@@ -38,7 +38,7 @@ echo " "
 
 cp config.final config.0
 
-./esercizio7.exe
+./Monte_Carlo_NVT.exe
 
 mv output*.0 sim_data/solid/
 
@@ -58,7 +58,7 @@ echo " "
 cp setups/input.liquid input.dat
 cp setups/config.fcc config.0
 
-./esercizio7.exe
+./Monte_Carlo_NVT.exe
 
 mkdir sim_data/liquid
 mv output*.0 sim_data/liquid/
@@ -70,7 +70,7 @@ echo " "
 
 cp config.final config.0
 
-./esercizio7.exe
+./Monte_Carlo_NVT.exe
 
 mv output*.0 sim_data/liquid/
 
@@ -80,7 +80,7 @@ echo " "
 
 cp config.final config.0
 
-./esercizio7.exe
+./Monte_Carlo_NVT.exe
 
 mv output*.0 sim_data/liquid/
 
@@ -97,7 +97,7 @@ echo " "
 cp setups/input.gas input.dat
 cp setups/config.fcc config.0
 
-./esercizio7.exe
+./Monte_Carlo_NVT.exe
 
 mkdir sim_data/gas
 mv output*.0 sim_data/gas/
@@ -108,7 +108,7 @@ echo " "
 
 cp config.final config.0
 
-./esercizio7.exe
+./Monte_Carlo_NVT.exe
 
 mv output*.0 sim_data/gas/
 
@@ -118,7 +118,7 @@ echo " "
 
 cp config.final config.0
 
-./esercizio7.exe
+./Monte_Carlo_NVT.exe
 
 mv output*.0 sim_data/gas/
 
@@ -126,6 +126,4 @@ mv output*.0 sim_data/gas/
 
 echo " "
 echo "DONE!"
-echo
-echo "SIMULATION PROCESS COMPLETE!"
-echo "Now you can visualize the results on the I-Python Notebook."
+echo "Simulation Process Finished!"

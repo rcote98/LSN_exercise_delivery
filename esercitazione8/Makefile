@@ -1,11 +1,16 @@
-LIBS:=`root-config --libs`
-INCS:=`root-config --cflags`
- 
-%.o : %.cpp
-	g++ -Wall -c $< ${INCS}
+CC = g++
+CFLAGS = -Wall -O3 --std=c++11
 
-qmc1d: qmc1d.o
-	g++ -O3 -Wall -o $@ $^ ${LIBS}
+all: esercizio8.exe
+
+esercizio8.exe : esercizio8.o random.o
+	$(CC) esercizio8.o random.o -o esercizio8.exe
+
+esercizio8.o : esercizio8.cpp esercizio8.h
+	$(CC) -c esercizio8.cpp -o esercizio8.o $(CFLAGS)
+	
+random.o : random.cpp random.h
+	$(CC) -c random.cpp -o random.o $(CFLAGS)
 
 clean:
-	rm *.o qmc1d potential.dat kinetic.dat probability.dat
+	rm *.o *.exe *.csv

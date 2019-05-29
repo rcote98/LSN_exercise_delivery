@@ -89,6 +89,7 @@ void Input(void){ //Prepare all stuff for the simulation
 
   vol = (double)npart/rho;
   box = pow(vol,1.0/3.0);
+  max_radius = box/2;
 
   // Simulation Config
   cout << "Temperature = " << temp << endl;
@@ -304,85 +305,123 @@ double Force(unsigned int ip, unsigned int idir){ //Compute forces as -Grad_ip V
 }
 
 void Measure(){ //Properties measurement
-  double v, p, t, vij, pij;
+  double v, p, t, r, vij, pij;
   double dx, dy, dz, dr;
-  ofstream Epot, Ekin, Etot, Temp, Pres;
+  ofstream Epot, Ekin, Etot, Temp, Pres, Gofr;
 
   Epot.open("output.epot.dat",ios::app);
   Ekin.open("output.ekin.dat",ios::app);
   Temp.open("output.temp.dat",ios::app);
   Etot.open("output.etot.dat",ios::app);
   Pres.open("output.pres.dat",ios::app);
+  Gofr.open("output.gofr.dat",ios::app);
 
   v = 0.0; //reset observables
   t = 0.0;
   p = 0.0;
+  r = 0.0;
 
   //cycle over pairs of particles
   for (unsigned int i=0; i<npart-1; ++i){
     for (unsigned int j=i+1; j<npart; ++j){
 
-     dx = Pbc( x[i] - x[j] );
-     dy = Pbc( y[i] - y[j] );
-     dz = Pbc( z[i] - z[j] );
+      dx = Pbc( x[i] - x[j] );
+      dy = Pbc( y[i] - y[j] );
+      dz = Pbc( z[i] - z[j] );
 
-     dr = dx*dx + dy*dy + dz*dz;
-     dr = sqrt(dr);
+      dr = dx*dx + dy*dy + dz*dz;
+      dr = sqrt(dr);
+      
 
-     if(dr < rcut){
-			vij = 4.0/pow(dr,12) - 4.0/pow(dr,6);
-			pij = 48.0*(pow(dr,-12) - 0.5*pow(dr,-6));
+      // g(r)
+      for(unsigned int k = 0; k < nbins; k++){
+          interval_min = k*max_radius/nbins;
+          interval_max = (k+1)*max_radius/nbins;
 
-			//Potential energy
-			v += vij;
+          if(dr < interval_max && dr > interval_min){
+            gofr_hist[k] += 2.;
+          }
+      }
 
-			// Pressure
-			p += pij;
-     }
-    }          
-  }
+      if(dr < rcut){
+        vij = 4.0/pow(dr,12) - 4.0/pow(dr,6);
+        pij = 48.0*(pow(dr,-12) - 0.5*pow(dr,-6));
+
+        // Potential energy
+        v += vij;
+
+        // Pressure
+        p += pij;
+
+      }
+    }
+  }  
+
 
   //Kinetic energy
   for (unsigned int i=0; i<npart; ++i) t += 0.5 * (vx[i]*vx[i] + vy[i]*vy[i] + vz[i]*vz[i]);
-   
+    
   stima_pot = v/(double)npart; //Potential energy
   stima_kin = t/(double)npart; //Kinetic energy
   stima_temp = (2.0 / 3.0) * t/(double)npart; //Temperature
   stima_etot = (t+v)/(double)npart; //Total energy
   stima_pres = (rho*(2.0/3.0)*t + p/(3*v))/(double)npart; // Pressure
 
+  stima_gofr = 0; // g(r) average
+	for(unsigned int k = 0; k < nbins; k++){
+
+		interval_min = k*max_radius/nbins;
+		interval_max = (k+1)*max_radius/nbins;
+		
+    norm = rho*npart*4*M_PI/3*(pow(interval_max, 2) - pow(interval_max, 2));
+
+		r = (interval_max - interval_min)/2;
+
+		stima_gofr += r*gofr_hist[k]/norm;
+
+	}
+
   Epot << stima_pot  << endl;
   Ekin << stima_kin  << endl;
   Temp << stima_temp << endl;
   Etot << stima_etot << endl;
   Pres << stima_pres << endl;
+  Gofr << stima_gofr << endl;
 
   Epot.close();
   Ekin.close();
   Temp.close();
   Etot.close();
   Pres.close();
+  Gofr.close();
 
   return;
+
 }
+
+
 
 void Averages(void){
 
 
-	ifstream Epot, Ekin, Etot, Temp, Pres;
-  double *etot_ave, *epot_ave, *ekin_ave, *temp_ave, *pres_ave; 
+	ifstream Epot, Ekin, Etot, Temp, Pres, Gofr;
+  double *etot_ave, *epot_ave, *ekin_ave;
+  double *temp_ave, *pres_ave, *gofr_ave; 
 
 	Epot.open("output.epot.dat");
 	Ekin.open("output.ekin.dat");
 	Temp.open("output.temp.dat");
 	Etot.open("output.etot.dat");
 	Pres.open("output.pres.dat");
+  Gofr.open("output.gofr.dat");
 
 	unsigned int nmeasures = nstep/measure_step;
 
 	unsigned int k;
 	double L = nmeasures/nblocks;
-	double* sum = new double[4];
+
+  unsigned int nprops = 6;
+	double* sum = new double[nprops];
 
 
 	double etot_meas[nmeasures];
@@ -390,6 +429,7 @@ void Averages(void){
 	double epot_meas[nmeasures];
 	double temp_meas[nmeasures];
 	double pres_meas[nmeasures];
+  double gofr_meas[nmeasures];
 
 	for(unsigned int i = 0; i < nmeasures; i++)
 	{
@@ -398,6 +438,7 @@ void Averages(void){
 			Temp >> temp_meas[i];
 			Etot >> etot_meas[i];
 			Pres >> pres_meas[i];
+      Gofr >> gofr_meas[i];
 	}
 	
 	etot_ave = new double[nblocks];
@@ -405,10 +446,11 @@ void Averages(void){
 	ekin_ave = new double[nblocks];
 	temp_ave = new double[nblocks];
 	pres_ave = new double[nblocks];
+  gofr_ave = new double[nblocks];
 
 	for(unsigned int i = 0; i<nblocks; i++){
 		
-		for(unsigned int j = 0; j < 5; j++) sum[j] = 0;
+		for(unsigned int j = 0; j < nprops; j++) sum[j] = 0;
 
 
 		for(unsigned int j = 0; j < L; j++){
@@ -420,6 +462,7 @@ void Averages(void){
 			sum[2] += temp_meas[k];
 			sum[3] += etot_meas[k];
 			sum[4] += pres_meas[k];
+      sum[5] += gofr_meas[k];
 		}
 
 		epot_ave[i] = sum[0]/L;
@@ -427,6 +470,7 @@ void Averages(void){
 		temp_ave[i] = sum[2]/L;
 		etot_ave[i] = sum[3]/L;
 		pres_ave[i] = sum[4]/L;
+    gofr_ave[i] = sum[5]/L;
 
 
 	}
@@ -436,12 +480,14 @@ void Averages(void){
 	Temp.close();
 	Etot.close();
 	Pres.close();
+  Gofr.close();
 
 	data_blocking(nblocks, etot_ave, "output.etot_ave.dat");
 	data_blocking(nblocks, epot_ave, "output.epot_ave.dat");
 	data_blocking(nblocks, ekin_ave, "output.ekin_ave.dat");
 	data_blocking(nblocks, temp_ave, "output.temp_ave.dat");
 	data_blocking(nblocks, pres_ave, "output.pres_ave.dat");
+  data_blocking(nblocks, gofr_ave, "output.gofr_ave.dat");
 
   cout << endl << "Final temperature " << temp_ave[nblocks-1] << endl << endl;
 

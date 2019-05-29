@@ -8,66 +8,71 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 *****************************************************************
 *****************************************************************/
 
-#include <stdlib.h>
-#include <iostream>  
-#include <fstream>      
-#include <cmath>
-#include <string>
+#ifndef __fluid_
+#define __fluid_
 
+unsigned int arg_count;
+char ** args;
+
+//Random numbers
 #include "random.h"
+int seed[4];
+Random rnd;
 
-using namespace std;
-
-// random numbers
-
-Random * rnd;
-
-// parameters, observables
-//const int m_props=4;
-double stima_pot, stima_kin, stima_etot;
-double stima_temp, stima_pres, stima_gofr;
-
-// averages
-double acc,att;
-
-// g(r)
-unsigned const int nbins = 100;
-double gofr_hist[nbins];
-double interval_min, interval_max; // bin max/min
-double norm; // histogram normalization
-double max_radius;
+//parameters, observables
 
 
-//configuration
-unsigned const int m_part=108;
-double x[m_part],y[m_part],z[m_part];
-double xold[m_part],yold[m_part],zold[m_part];
-double vx[m_part],vy[m_part],vz[m_part];
-
-// thermodynamical state
-unsigned int npart;
-double energy,temp,vol,rho,box,rcut;
+double x;
+double p;
+double mu, sigma;
 
 // simulation
-unsigned int nstep, nblocks, iprint;
-unsigned int measure_step=10;
-double delta;
+
+const int m_props=1000;
+
+double p_trans;
+double delta = 3;
+double nblk = 30;
+double nstep = 10000;
+
+const int wd = 15;
+
+int mcstep;
 bool verbose;
-bool RESTART;
 
-// functions
+int n_props, ih;
+double walker[m_props];
+
+// averages
+double blk_av[m_props],blk_norm;
+double glob_av[m_props],glob_av2[m_props];
+double stima_H, err_H;
+
+unsigned int accepted, attempted;
+
+// constants
+const double pi = 3.1415927;
+const double m = 1;
+const double hbar = 1;
+
+//functions
 void Input(void);
+void Reset(int);
+void Accumulate(void);
+void Averages(int);
 void Move(void);
-void ConfFinal(void);
-void ConfXYZ(int);
-void Averages();
 void Measure(void);
+double Error(double,double,int);
 
-double Force(unsigned int, unsigned int);
-double Pbc(double);
 
-void data_blocking(unsigned int N, double* ave, string fname);
-double error(double av, double av2, int n);
+// physics functions
+double Hamiltonian(double x, double mu, double sigma);
+
+double Potential(double x);
+double Wave(double x, double mu, double sigma);
+double Wave_second(double x, double mu, double sigma);
+
+#endif
 
 /****************************************************************
 *****************************************************************

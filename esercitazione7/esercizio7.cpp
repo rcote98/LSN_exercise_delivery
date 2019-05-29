@@ -13,7 +13,8 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 #include <ostream>
 #include <cmath>
 #include <iomanip>
-#include "Monte_Carlo_NVT.h"
+
+#include "esercizio7.h"
 
 using namespace std;
 
@@ -83,6 +84,7 @@ void Input(void)
 	bet = 1.0/temp;
 	vol = (double)npart/rho;
 	box = pow(vol,1.0/3.0);
+	max_radius = box/2;
 
 	vtail = (8.0*pi*rho)/(9.0*pow(rcut,9)) - (8.0*pi*rho)/(3.0*pow(rcut,3));
 	ptail = (32.0*pi*rho)/(9.0*pow(rcut,9)) - (16.0*pi*rho)/(3.0*pow(rcut,3));
@@ -210,13 +212,12 @@ double Boltzmann(double xx, double yy, double zz, int ip)
 
 void Measure()
 {
-	int bin;
 	double v = 0.0, w = 0.0;
 	double vij, wij;
 	double dx, dy, dz, dr;
 
 	//reset the hystogram of g(r)
-	for (int k=igofr; k<igofr+nbins; ++k) walker[k]=0.0;
+	for (int k=igofr; k<igofr+nbins; k++) walker[k]=0.0;
 
 	//cycle over pairs of particles
 	for (int i=0; i<npart-1; ++i)
@@ -228,29 +229,43 @@ void Measure()
 			dy = Pbc(y[i] - y[j]);
 			dz = Pbc(z[i] - z[j]);
 
-		  dr = dx*dx + dy*dy + dz*dz;
-		  dr = sqrt(dr);
+			dr = dx*dx + dy*dy + dz*dz;
+			dr = sqrt(dr);
 
 			//update of the histogram of g(r)
 
-		  if(dr < rcut)
-		  {
-			 vij = 1.0/pow(dr,12) - 1.0/pow(dr,6);
-			 wij = 1.0/pow(dr,12) - 0.5/pow(dr,6);
+			for(unsigned int k = 0; k < nbins; k++){
+				interval_min = k*max_radius/nbins;
+				interval_max = (k+1)*max_radius/nbins;
 
-			 // contribution to energy and virial
-			 v += vij;
-			 w += wij;
-		  }
+				norm = rho*npart*4*M_PI/3*(pow(interval_max, 2) - pow(interval_max, 2));
+
+				if(dr < interval_max && dr > interval_min){
+					walker[igofr+k] += 2./norm;
+				}
+			}
+
+			
+
+			if(dr < rcut)
+			{
+				vij = 1.0/pow(dr,12) - 1.0/pow(dr,6);
+				wij = 1.0/pow(dr,12) - 0.5/pow(dr,6);
+
+				// contribution to energy and virial
+				v += vij;
+				w += wij;
+			}
 		}          
 	}
 
 	walker[iv] = 4.0 * v;
 	walker[iw] = 48.0 * w / 3.0;
 
-	ofstream Gofr, Gave, Epot, Pres;
+	ofstream Epot, Pres;
 	Epot.open("output.inst_epot.0",ios::app);
 	Pres.open("output.inst_pres.0",ios::app);
+
 	const int wd=15;
 
 	stima_pot = walker[iv]/(double)npart + vtail; // Energy
@@ -280,6 +295,7 @@ void Reset(int iblk) //Reset block averages
 	 {
 		 blk_av[i] = 0;
 	 }
+
 	 blk_norm = 0;
 	 attempted = 0;
 	 accepted = 0;
@@ -299,45 +315,57 @@ void Accumulate(void) //Update block averages
 
 void Averages(int iblk) //Print results for current block
 {
+	double r;
+	const int wd=15;
 		
-	 double r, gdir;
-	 ofstream Gofr, Gave, Epot, Pres;
-	 const int wd=15;
-		
-		cout << "Block number " << iblk << endl;
-		cout << "Acceptance rate " << accepted/attempted << endl << endl;
-		
-		Epot.open("output.epot.0",ios::app);
-		Pres.open("output.pres.0",ios::app);
-		Gofr.open("output.gofr.0",ios::app);
-		Gave.open("output.gave.0",ios::app);
-		
-		stima_pot = blk_av[iv]/blk_norm/(double)npart + vtail; //Potential energy
-		glob_av[iv] += stima_pot;
-		glob_av2[iv] += stima_pot*stima_pot;
-		err_pot=Error(glob_av[iv],glob_av2[iv],iblk);
-		
-		stima_pres = rho * temp + (blk_av[iw]/blk_norm + ptail * (double)npart) / vol; //Pressure
-		glob_av[iw] += stima_pres;
-		glob_av2[iw] += stima_pres*stima_pres;
-		err_press=Error(glob_av[iw],glob_av2[iw],iblk);
+	cout << "Block number " << iblk << endl;
+	cout << "Acceptance rate " << accepted/attempted << endl << endl;
+	
+	ofstream Gofr, Gave, Epot, Pres;
 
-		//----------------------------------------
+	Epot.open("output.epot.0",ios::app);
+	Pres.open("output.pres.0",ios::app);
+	Gofr.open("output.gofr.0",ios::app);
 
-		//Potential energy per particle
-		Epot << setw(wd) << iblk <<  setw(wd) << stima_pot << setw(wd) << glob_av[iv]/(double)iblk << setw(wd) << err_pot << endl;
-		//Pressure
-		Pres << setw(wd) << iblk <<  setw(wd) << stima_pres << setw(wd) << glob_av[iw]/(double)iblk << setw(wd) << err_press << endl;
-		//g(r) --- Da fare
-		Gofr << setw(wd) << iblk <<  setw(wd) << stima_pres << setw(wd) << glob_av[iw]/(double)iblk << setw(wd) << err_press << endl;
-		Gave << setw(wd) << iblk <<  setw(wd) << stima_pres << setw(wd) << glob_av[iw]/(double)iblk << setw(wd) << err_press << endl;
+	stima_pot = blk_av[iv]/blk_norm/(double)npart + vtail; //Potential energy
+	glob_av[iv] += stima_pot;
+	glob_av2[iv] += stima_pot*stima_pot;
+	err_pot=Error(glob_av[iv],glob_av2[iv],iblk);
+		
+	stima_pres = rho * temp + (blk_av[iw]/blk_norm + ptail * (double)npart) / vol; //Pressure
+	glob_av[iw] += stima_pres;
+	glob_av2[iw] += stima_pres*stima_pres;
+	err_press=Error(glob_av[iw],glob_av2[iw],iblk);
 
-		cout << "----------------------------" << endl << endl;
+	stima_gofr = 0;
+	for(unsigned int k = 0; k < nbins; k++){
 
-		Epot.close();
-		Pres.close();
-		Gofr.close();
-		Gave.close();
+		interval_min = k*max_radius/nbins;
+		interval_max = (k+1)*max_radius/nbins;
+		
+		r = (interval_max - interval_min)/2;
+
+		stima_gofr += r*walker[igofr+k];
+
+	}
+	glob_av[igofr] += stima_gofr/blk_norm;
+	glob_av2[igofr] += stima_gofr*stima_gofr;
+	err_gofr=Error(glob_av[igofr],glob_av2[igofr],iblk);
+
+	//----------------------------------------
+
+	//Potential energy per particle
+	Epot << setw(wd) << iblk <<  setw(wd) << stima_pot << setw(wd) << glob_av[iv]/(double)iblk << setw(wd) << err_pot << endl;
+	//Pressure
+	Pres << setw(wd) << iblk <<  setw(wd) << stima_pres << setw(wd) << glob_av[iw]/(double)iblk << setw(wd) << err_press << endl;
+	//g(r) --- Da fare
+	Gofr << setw(wd) << iblk <<  setw(wd) << stima_gofr << setw(wd) << glob_av[igofr]/(double)iblk << setw(wd) << err_gofr << endl;
+
+	cout << "----------------------------" << endl << endl;
+
+	Epot.close();
+	Pres.close();
+	Gofr.close();
 }
 
 
