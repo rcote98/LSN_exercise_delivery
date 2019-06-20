@@ -49,5 +49,5 @@ To view the simulation results, execute all the commands within the notebook in 
 <img src="d_state.png">
 </p>
 <p align="center"> 
-Sampling of the Hydrogen Wavefunction's l=2 base state via the Metropolis Algorithm.
+Sampling of the Hydrogen Wavefunction's D base state via the Metropolis Algorithm.
 </p>
