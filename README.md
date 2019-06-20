@@ -49,5 +49,5 @@ To view the simulation results, execute all the commands within the notebook in 
 <img src="d_state.png">
 </p>
 <p align="center"> 
-Hydrogenic D Wavefunction
+Hydrogenic Wavefunction for the $l=2$ base state.
 </p>
