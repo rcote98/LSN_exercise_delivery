@@ -52,7 +52,9 @@ TSProblem :: TSProblem(vector< vector<double> > c){
 
     for(unsigned int i = 0; i < pop_size; i++){
         if(!CheckPath(i)){
-            cout << "Invalid path, exiting..." << endl;
+            cout << "Invalid path:" << endl;
+            PrintPath(i);
+            cout << "Exiting..." << endl;
             exit(0);
         }
     }
@@ -74,37 +76,52 @@ void TSProblem::AdvanceGeneration(){
 
     int moved, shift;
 
-    double rswap, rshift, rcross;
+    double rswap, rmswap, rshift, rcross;
 
     // chernobyl loop
-    for(unsigned int i = 0; i<MUT_GEN; i++){
+    for(unsigned int i = 0; i<pop_size; i++){
 
         j = (int)(pop_size*pow(rnd->Rannyu(),M_EXP));
 
+        // swap two cities
         rswap = rnd->Rannyu();
-        moved = (int) (rnd->Rannyu()*ncity/3);
-        if (rswap < PSWAP) paths[j] = SwapMutation(paths[j], moved);
+        if (rswap < PSWAP){ 
+            paths[j] = SwapMutation(paths[j]);
+        }
 
+        // swap "moved" cities
+        rmswap = rnd->Rannyu();
+        if (rmswap < PMSWAP){
+            moved = (int) (rnd->Rannyu()*ncity/3);
+            paths[j] = SwapMutation(paths[j], moved);
+        }
+
+        // shift the whole path by "shift"
         rshift = rnd->Rannyu();
-        shift = (int) (rnd->Rannyu()*ncity/3);
-        if (rshift < PSHIFT) paths[j] = ShiftMutation(paths[j], shift);
-
+        if (rshift < PSHIFT){
+            shift = (int) (rnd->Rannyu()*ncity/3);
+            paths[j] = ShiftMutation(paths[j], shift);
+        }
     }
 
     // crossover loop
-    for(unsigned int i = 0; i<CROSSOVERS; i++){
+    for(unsigned int i = 0; i<pop_size; i++){
 
         j = (int)(pop_size*pow(rnd->Rannyu(),C_EXP));
         k = (int)(pop_size*pow(rnd->Rannyu(),C_EXP));
 
         rcross = rnd->Rannyu();
-        //if (rcross < PCROSS) Crossover(j, k);
+        if (rcross < PCROSS) Crossover(j, k);
+
+        if(!CheckPath(j)) exit(0);
 
     }
 
     for(unsigned int i = 0; i < pop_size; i++){
         if(!CheckPath(i)){
-            cout << "Invalid path, exiting..." << endl;
+            cout << "Invalid path:" << endl;
+            PrintPath(i);
+            cout << "Exiting..." << endl;
             exit(0);
         }
     }
@@ -187,41 +204,50 @@ void TSProblem::SortPopulation(){
 void TSProblem::Crossover(unsigned int p1, unsigned int p2){
 
     unsigned int cut = (int)(ncity*rnd->Rannyu());
+    unsigned int tail = ncity - cut;
 
     vector<unsigned int> child1(ncity), child2(ncity);
-    unsigned int counter;
-    bool found1, found2;
+    vector<unsigned int> missing1(tail), missing2(tail);
 
+    unsigned int count;
 
     for(unsigned int i = 0; i<cut; i++){
         child1[i] = paths[p1][i];
         child2[i] = paths[p2][i];
     }
 
-    for(unsigned int i = cut; i < ncity; i++){
+    for(unsigned int i = 0; i < tail; i++){
+        missing1[i] = paths[p1][cut + i];
+        missing2[i] = paths[p2][cut + i];
+    }
 
-        counter = 0;
-        found1 = false;
-        found2 = false;
-
-        while(found1 && found2)
-        {
-            
-
-
-            counter ++;
+    count = 0;
+    while(count < tail){
+        for(unsigned int i=0; i< ncity; i++){
+            for(unsigned int j=0; j<tail; j++){
+	            if(paths[p2][i]==missing1[j]){
+	                child1[cut+count]=missing1[j];
+	                count++;
+	            }
+            }
         }
-        
-            
+    }
 
-        child1[i] = ;
-
+    count = 0;
+    while(count < tail){
+        for(unsigned int i=0; i< ncity; i++){
+            for(unsigned int j=0; j<tail; j++){
+	            if(paths[p1][i]==missing2[j]){
+	                child2[cut+count]=missing2[j];
+	                count++;
+	            }
+            }
+        }
     }
 
 
     paths[p1] = child1;
     paths[p2] = child2;
-
 }
 
 vector<unsigned int> TSProblem::SwapMutation(vector<unsigned int> path){
@@ -275,6 +301,40 @@ vector<unsigned int> TSProblem::ShiftMutation(vector<unsigned int> path, unsigne
 
     return path;
 }
+
+vector<unsigned int> TSProblem::MShiftMutation(vector<unsigned int> path, unsigned int m, unsigned int n){
+
+
+    return;
+}
+
+vector<unsigned int> Inversion(vector<unsigned int> path, unsigned int m, unsigned int n){
+
+
+
+int a=rnum(rnd.Rannyu());
+  int b=rnum(rnd.Rannyu());
+
+  
+  if(a+b>=N) b=N-a;
+  vector<int> copy(b);
+  for(int i=0; i<b; i++){
+    copy[i]=v[PBC(a+i)];
+  }
+  
+  for(int i=0; i<a; i++){
+    v[i]=v[i];
+  }
+  for(int i=a+b; i<N; i++){
+    v[i]=v[i];
+  }
+  for(int i=0; i<b; i++){
+    v[PBC(i+a)]=copy[b-i-1];
+  }
+}
+
+
+
 
 //###################################################################
 // STATISTICS STUFF #################################################
@@ -393,3 +453,13 @@ void TSProblem::ShowPops(unsigned int n){
 
 }
 
+void TSProblem::PrintPath(unsigned int i){
+
+    cout << endl << "[";
+    for(unsigned int j = 0; j < ncity; j++){
+        cout << setw(3) << paths[i][j];
+    }
+    cout << "]" << endl << endl;
+
+
+}

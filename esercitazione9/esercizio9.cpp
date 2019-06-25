@@ -37,14 +37,13 @@ int main(){
 	// ------------------------------------------------------------------
 
     unsigned const int NCITY = 30;
-    unsigned const int GENS = 100;
+    unsigned const int GENS = 400;
 
     int gen;
     double avg_path;
     double ave_fit;
     vector<unsigned int> best_path;
 
-    
     vector<vector<double>> radial_cities(NCITY);
     double radius = 30;
 
@@ -88,17 +87,17 @@ int main(){
         CircularMap.AdvanceGeneration();
 
     }
-    cout << "############################################################" << endl;
+    //cout << "############################################################" << endl;
     fout.close();
 
     fout.open("output.circle.cities.dat");
-    fout << setw(20) << "City ID" << setw(20) << "City X" 
-         << setw(20) << "City Y"  << setw(20) << "Best Path" << endl;
+    fout << setw(20) << "Best Path" << setw(20) << "City X" 
+         << setw(20) << "City Y"  << setw(20) << "ID" << endl;
     best_path = CircularMap.GetBestPath();
     for(unsigned int i = 0; i < radial_cities.size(); i++){
 
-        fout << setw(20) << i << setw(20) << radial_cities[i][0] 
-             << setw(20) << radial_cities[i][1] << setw(20) << best_path[i] << endl;
+        fout << setw(20) << best_path[i] << setw(20) << radial_cities[i][0] 
+             << setw(20) << radial_cities[i][1] << setw(20) << i << endl;
 
     }
     fout.close();
@@ -152,13 +151,13 @@ int main(){
     fout.close();
 
     fout.open("output.square.cities.dat");
-    fout << setw(20) << "City ID" << setw(20) << "City X" 
-         << setw(20) << "City Y"  << setw(20) << "Best Path" << endl;
+    fout << setw(20) << "Best Path" << setw(20) << "City X" 
+         << setw(20) << "City Y"  << setw(20) << "ID" << endl;
     best_path = SquareMap.GetBestPath();
     for(unsigned int i = 0; i < square_cities.size(); i++){
 
-        fout << setw(20) << i << setw(20) << square_cities[i][0] 
-             << setw(20) << square_cities[i][1] << setw(20) << best_path[i] << endl;
+        fout << setw(20) << best_path[i] << setw(20) << square_cities[i][0] 
+             << setw(20) << square_cities[i][1] << setw(20) << i << endl;
 
     }
     fout.close();

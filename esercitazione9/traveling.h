@@ -45,8 +45,10 @@ public:
 
     void Crossover(unsigned int i, unsigned int j);
     vector<unsigned int> SwapMutation(vector<unsigned int> path);
-    vector<unsigned int> SwapMutation(vector<unsigned int> pathm, unsigned int m);
-    vector<unsigned int> ShiftMutation(vector<unsigned int> pathm, unsigned int m);
+    vector<unsigned int> SwapMutation(vector<unsigned int> path, unsigned int m);
+    vector<unsigned int> ShiftMutation(vector<unsigned int> path, unsigned int m);
+    vector<unsigned int> MShiftMutation(vector<unsigned int> path, unsigned int m, unsigned int n);
+    vector<unsigned int> Inversion(vector<unsigned int> path, unsigned int m, unsigned int n);
 
     // statistics stuff
 
@@ -64,6 +66,7 @@ public:
     // printers
 
     void ShowPops(unsigned int n);
+    void PrintPath(unsigned int i);
 
     // getters
 
@@ -76,14 +79,14 @@ public:
 private:
 
     unsigned const int INIT_MUT = 60;
-    unsigned const int MUT_GEN = 4000;
-    unsigned const int CROSSOVERS = 100;
-    const double M_EXP = 0.2;    
-    const double C_EXP = 2;
 
-    const double PSWAP = 1;
-    const double PSHIFT = 1;
-    const double PCROSS = 0.5;    
+    const double M_EXP = 0.2;    
+    const double C_EXP = 1.3;
+
+    const double PSWAP = 0.1;
+    const double PMSWAP = 0.1;
+    const double PSHIFT = 0.2;
+    const double PCROSS = 0.8;    
 
     unsigned int generation;
     unsigned int pop_size;
