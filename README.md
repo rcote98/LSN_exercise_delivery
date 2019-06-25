@@ -35,7 +35,7 @@ To view the simulation results, execute all the commands within the notebook in 
 - [FINAL] Exercise 1: Testing the RNG, generating distributions, Buffon's experiment.
 - [FINAL] Exercise 2: Monte Carlo integration, importance sampling
 - [FINAL] Exercise 3: European option Call/Put price prediction with Monte Carlo methods.
-- [DONE] Exercise 4: Molecular Dynamics simulation using the Lennard-Jones model plus a Verlet algorithm.
+- Exercise 4: Molecular Dynamics simulation using the Lennard-Jones model plus a Verlet algorithm.
 - [FINAL] Exercise 5: Sampling hidrogenic wave functions with the Metropolis algorithm.
 - [FINAL] Exercise 6: 1-D Ising Model Monte Carlo simulation.
 - Exercise 7: Molecular Dynamics simulation using the Lennard-Jones model plus the Metropolis algorithm.
@@ -43,7 +43,7 @@ To view the simulation results, execute all the commands within the notebook in 
 - Exercise 9: Developing a Genetic Algorithm for the Traveling Salesman Problem.
 - Exercise 10: Simmulated Annealing applied to the Traveling Salesman Problem.
 - Exercise 11: Application of simple Feedforward Neural Networks with Keras.
-- [DONE] Exercise 12: Image Recognition with Convolutional Neural Networks
+- Exercise 12: Image Recognition with Convolutional Neural Networks
 
 <p align="center"> 
 <img src="d_state.png">
