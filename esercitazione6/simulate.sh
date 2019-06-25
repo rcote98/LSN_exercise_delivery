@@ -53,7 +53,7 @@ do
     ./esercizio6.exe $TEMP
 
     mv output.*.0 "sim_data/TEMP$c/metro"
-    mv conf.final "sim_data/TEMP$c/metro"
+    mv config.final "sim_data/TEMP$c/metro"
 
     echo "WITH magnetization:"
     echo "Equilibration..."
@@ -72,7 +72,7 @@ do
     ./esercizio6.exe $TEMP 0.02
 
     mv output.mag.0 "sim_data/TEMP$c/metro"
-    mv conf.final "sim_data/TEMP$c/metro/conf.final.mag"
+    mv config.final "sim_data/TEMP$c/metro/conf.final.mag"
     rm output.*.0
 
     echo
