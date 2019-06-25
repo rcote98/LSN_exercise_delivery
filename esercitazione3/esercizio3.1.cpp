@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// std function given the average, average squared and number of values n
 double error(double av, double av2, int n){
 	if (n==0) return 0;
 	else return sqrt((av2 - av*av)/n);
@@ -14,10 +15,12 @@ double error(double av, double av2, int n){
 
 // -------------------------------------------------------------------
 
+// continuous S
 double futureS(double t, double W, double S0, double mu, double sigma){
 	return S0*exp((mu - 0.5*pow(sigma,2))*t  + sigma*W);
 };
 
+// stepped S
 double stepS(double deltat, double Z, double S0, double mu, double sigma){
 	return S0*exp((mu - 0.5*pow(sigma,2))*deltat  + sigma*Z*sqrt(deltat));;
 }
@@ -151,8 +154,6 @@ int main(int argc, char* argv[]){
 			St = prevS;
 
 			c_price = exp(-r*T)*max(0.,St-K);
-
-			//c_price = call_option_price(t,St, sigma, r, K, T);
 
 			
 			sum += c_price;

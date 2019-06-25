@@ -7,11 +7,13 @@
 
 using namespace std;
 
+// std function given the average, average squared and number of values n
 double error(double av, double av2, int n){
 	if (n==0) return 0;
 	else return sqrt(pow(av-av2, 2)/n);
 }
 
+// dice choice out of a random number
 int dice(double r){
 	if(r < 1./6.) return 1;
 	if(r > 1./6. && r < 2./6.) return 2;

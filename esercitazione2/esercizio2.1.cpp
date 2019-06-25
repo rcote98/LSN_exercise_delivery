@@ -7,19 +7,23 @@
 
 using namespace std;
 
+// std function given the average, average squared and number of values n
 double error(double av, double av2, int n){
 	if (n==0) return 0;
 	else return sqrt((av2 - av*av)/n);
 };
 
+// function to integrate
 double funzione(double x){
 	return M_PI*cos(M_PI*x/2)/2;
 };
 
+// taylor expansion of cos(x)
 double taylor(double x){
   return 1.-pow(M_PI*x,2)/8.;
 }
 
+// distribution for importance sampling
 double p_dist(double x){
   return (24./(24.- pow(M_PI, 2)))*taylor(x);
 }
@@ -51,7 +55,7 @@ int main(int argc, char* argv[]){
 	} else cerr << "PROBLEM: Unable to open seed.in" << endl;
 
 	// ----------------------------------------------------------
-	// VALORE MEDIO DI R ----------------------------------------
+	// CALCULATION WITHOUT IMPORTANCE SAMPLING ------------------
 
 	unsigned int M = 100000;         // Total number of throws
 	unsigned int N = 100;            // Number of blocks
@@ -110,6 +114,7 @@ int main(int argc, char* argv[]){
 	}
 
 	// --------------------------------------------------------------
+	// CALCULATION WITH IMPORTANCE SAMPLING -------------------------
 	
 	double a, b;
 	for(unsigned int i = 0; i<N; i++){
