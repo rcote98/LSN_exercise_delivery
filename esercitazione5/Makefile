@@ -16,4 +16,4 @@ metropolis.o : metropolis.cpp metropolis.h
 	$(CC) -c metropolis.cpp -o metropolis.o $(CFLAGS)
 
 clean:
-	rm *.o *.exe *.csv
+	rm *.o *.exe
