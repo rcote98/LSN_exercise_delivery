@@ -7,7 +7,7 @@ Repository created to deliver the exercises for the subject "Laboratorio di Simu
 
 - Linux OS (developed with Ubuntu 18.10)
 - g++ C++ compiler
-- Python 3.* with numpy, scipy and maplotlib modules installed
+- Python 3.* with _numpy_, _scipy_, _maplotlib_, _keras_ and _tensorflow_ modules installed 
 - Jupyter Notebook
 
 ## Usage
@@ -39,13 +39,15 @@ To view the simulation results, execute all the commands within the notebook in 
 - [DONE] Exercise 5: Sampling hidrogenic wave functions with the Metropolis algorithm.
 - [DONE] Exercise 6: 1-D Ising Model Monte Carlo simulation.
 - Exercise 7: Molecular Dynamics simulation using the Lennard-Jones model plus the Metropolis algorithm.
-- Exercise 8:
-- Exercise 9:
-- Exercise 10:
+- Exercise 8: Variational Groud-State Optimization using the Metropolis algorithm.
+- Exercise 9: Developing a Genetic Algorithm for the Traveling Salesman Problem.
+- Exercise 10: Simmulated Annealing applied to the Traveling Salesman Problem.
+- Exercise 11: Application of simple Feedforward Neural Networks with Keras.
+- [DONE] Exercise 12: Image Recognition with Convolutional Neural Networks
 
 <p align="center"> 
 <img src="d_state.png">
 </p>
 <p align="center"> 
-Hydrogenic D Wavefunction
+Sampling of the Hydrogen Wavefunction's D base state via the Metropolis Algorithm.
 </p>
