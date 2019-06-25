@@ -37,7 +37,7 @@ To view the simulation results, execute all the commands within the notebook in 
 - [FINAL] Exercise 3: European option Call/Put price prediction with Monte Carlo methods.
 - [DONE] Exercise 4: Molecular Dynamics simulation using the Lennard-Jones model plus a Verlet algorithm.
 - [FINAL] Exercise 5: Sampling hidrogenic wave functions with the Metropolis algorithm.
-- [DONE] Exercise 6: 1-D Ising Model Monte Carlo simulation.
+- [FINAL] Exercise 6: 1-D Ising Model Monte Carlo simulation.
 - Exercise 7: Molecular Dynamics simulation using the Lennard-Jones model plus the Metropolis algorithm.
 - Exercise 8: Variational Ground-State Optimization using the Metropolis algorithm.
 - Exercise 9: Developing a Genetic Algorithm for the Traveling Salesman Problem.
