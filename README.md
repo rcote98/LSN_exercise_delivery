@@ -43,7 +43,7 @@ To view the simulation results, execute all the commands within the notebook in 
 - Exercise 9: Developing a Genetic Algorithm for the Traveling Salesman Problem.
 - Exercise 10: Simmulated Annealing applied to the Traveling Salesman Problem.
 - Exercise 11: Application of simple Feedforward Neural Networks with Keras.
-- Exercise 12: Image Recognition with Convolutional Neural Networks
+- [FINAL] Exercise 12: Image Recognition with Convolutional Neural Networks
 
 <p align="center"> 
 <img src="d_state.png">
