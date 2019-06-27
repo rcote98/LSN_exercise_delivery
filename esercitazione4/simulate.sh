@@ -44,11 +44,14 @@ cp setups/input.solid input.dat
 cp config.final config.0
 cp config.final.prev config.0.prev
 
-./esercizio4.exe
+read T < temp.final
+
+./esercizio4.exe $T
 
 mv output.*.dat sim_data/solid/
 mv config.final sim_data/solid/
 mv config.final.prev sim_data/solid/
+mv temp.final sim_data/solid
 
 echo 
 echo "DONE!"
@@ -66,8 +69,6 @@ echo
 cp setups/input.liquid.restart input.dat
 cp setups/config.fcc config.0
 
-
-
 ./esercizio4.exe
 
 mkdir -p sim_data/liquid
@@ -83,7 +84,9 @@ cp setups/input.liquid input.dat
 cp config.final config.0
 cp config.final.prev config.0.prev
 
-./esercizio4.exe
+read T < temp.final
+
+./esercizio4.exe $T
 
 mv output.*.dat sim_data/liquid/
 
@@ -94,11 +97,14 @@ echo
 cp config.final config.0
 cp config.final.prev config.0.prev
 
-./esercizio4.exe
+read T < temp.final
+
+./esercizio4.exe $T
 
 mv output.*.dat sim_data/liquid/
-mv config.final sim_data/solid/
-mv config.final.prev sim_data/solid/
+mv config.final sim_data/liquid/
+mv config.final.prev sim_data/liquid/
+mv temp.final sim_data/liquid
 
 echo
 echo "DONE!"
@@ -130,7 +136,9 @@ cp setups/input.gas.restart input.dat
 cp config.final config.0
 cp config.final.prev config.0.prev
 
-./esercizio4.exe
+read T < temp.final
+
+./esercizio4.exe $T
 
 mv output.*.dat sim_data/gas/
 
@@ -141,11 +149,14 @@ echo
 cp config.final config.0
 cp config.final.prev config.0.prev
 
-./esercizio4.exe
+read T < temp.final
+
+./esercizio4.exe $T
 
 mv output.*.dat sim_data/gas/
-mv config.final sim_data/solid/
-mv config.final.prev sim_data/solid/
+mv config.final sim_data/gas/
+mv config.final.prev sim_data/gas/
+mv temp.final sim_data/gas/
 
 echo
 echo "DONE!"

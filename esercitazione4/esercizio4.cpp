@@ -13,9 +13,12 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 using namespace std;
 
 
-int main(){ 
+int main(int argc, char * argv[]){ 
 
   verbose = false;
+
+  arg_count = argc;
+	args = argv;
 
   Input();             //Inizialization
   int nconf = 1;
@@ -90,6 +93,13 @@ void Input(void){ //Prepare all stuff for the simulation
   vol = (double)npart/rho;
   box = pow(vol,1.0/3.0);
   max_radius = box/2;
+
+
+  if (arg_count == 2){
+
+		temp = atof(args[1]);
+
+	}
 
   // Simulation Config
   cout << "Temperature = " << temp << endl;
@@ -185,7 +195,7 @@ void Input(void){ //Prepare all stuff for the simulation
     double vxnew[npart], vynew[npart], vznew[npart]; 
     double fx[m_part], fy[m_part], fz[m_part];
 
-    unsigned int recalcs = 20; // recalcs of the previous position
+    unsigned int recalcs = 500; // recalcs of the previous position
 
     for(unsigned int k = 0; k < recalcs; k++){
 
@@ -317,7 +327,7 @@ void Measure(){ //Properties measurement
   Gofr.open("output.gofr.dat",ios::app);
 
   v = 0.0; //reset observables
-  t = 0.0;
+  t = 0.0; 
   p = 0.0;
   r = 0.0;
 
@@ -338,8 +348,10 @@ void Measure(){ //Properties measurement
           interval_min = k*max_radius/nbins;
           interval_max = (k+1)*max_radius/nbins;
 
+          norm = rho*npart*4*M_PI/3*(pow(interval_max, 2) - pow(interval_max, 2));
+
           if(dr < interval_max && dr > interval_min){
-            gofr_hist[k] += 2.;
+            gofr_hist[k] += 2./norm;
           }
       }
 
@@ -367,19 +379,22 @@ void Measure(){ //Properties measurement
   stima_etot = (t+v)/(double)npart; //Total energy
   stima_pres = (rho*(2.0/3.0)*t + p/(3*v))/(double)npart; // Pressure
 
-  stima_gofr = 0; // g(r) average
+	stima_gofr = 0; // g(r) average
 	for(unsigned int k = 0; k < nbins; k++){
 
 		interval_min = k*max_radius/nbins;
 		interval_max = (k+1)*max_radius/nbins;
 		
-    norm = rho*npart*4*M_PI/3*(pow(interval_max, 2) - pow(interval_max, 2));
-
 		r = (interval_max - interval_min)/2;
 
-		stima_gofr += r*gofr_hist[k]/norm;
+		stima_gofr += r*gofr_hist[k];
+
+    // reset histogram
+    gofr_hist[k] = 0;
 
 	}
+
+  
 
   Epot << stima_pot  << endl;
   Ekin << stima_kin  << endl;
@@ -491,6 +506,7 @@ void Averages(void){
 
   cout << endl << "Final temperature " << temp_ave[nblocks-1] << endl << endl;
 
+  stima_temp = temp_ave[nblocks-1];
 
 }
 
@@ -512,6 +528,14 @@ void ConfFinal(void){ //Write final configuration
     WriteConf << x[i]/box << "   " <<  y[i]/box << "   " << z[i]/box << endl;
   }
   WriteConf.close();
+
+  cout << "Printing final temperature to temp.final" << endl;
+	WriteConf.open("temp.final");
+
+	WriteConf << stima_temp << endl;
+	
+	WriteConf.close();
+
 
   return;
 }

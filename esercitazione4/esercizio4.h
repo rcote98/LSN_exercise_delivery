@@ -18,6 +18,9 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 
 using namespace std;
 
+unsigned int arg_count;
+char ** args;
+
 // random numbers
 
 Random * rnd;

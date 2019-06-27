@@ -233,7 +233,6 @@ void Measure()
 			dr = sqrt(dr);
 
 			//update of the histogram of g(r)
-
 			for(unsigned int k = 0; k < nbins; k++){
 				interval_min = k*max_radius/nbins;
 				interval_max = (k+1)*max_radius/nbins;
@@ -348,6 +347,7 @@ void Averages(int iblk) //Print results for current block
 		stima_gofr += r*walker[igofr+k];
 
 	}
+
 	glob_av[igofr] += stima_gofr/blk_norm;
 	glob_av2[igofr] += stima_gofr*stima_gofr;
 	err_gofr=Error(glob_av[igofr],glob_av2[igofr],iblk);
@@ -371,7 +371,7 @@ void Averages(int iblk) //Print results for current block
 
 void ConfFinal(void)
 {
-	ofstream WriteConf, WriteSeed;
+	ofstream WriteConf;
 
 	cout << "Print final configuration to file config.final " << endl << endl;
 	WriteConf.open("config.final");
@@ -382,6 +382,8 @@ void ConfFinal(void)
 	WriteConf.close();
 
 	rnd.SaveSeed();
+
+
 }
 
 void ConfXYZ(int nconf){ //Write configuration in .xyz format
