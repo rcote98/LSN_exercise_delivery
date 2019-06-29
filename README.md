@@ -42,7 +42,7 @@ To view the simulation results, execute all the commands within the notebook in 
 - Exercise 8: Variational Ground-State Optimization using the Metropolis algorithm.
 - Exercise 9: Developing a Genetic Algorithm for the Traveling Salesman Problem.
 - Exercise 10: Simmulated Annealing applied to the Traveling Salesman Problem.
-- Exercise 11: Application of simple Feedforward Neural Networks with Keras.
+- [FINAL] Exercise 11: Application of simple Feedforward Neural Networks with Keras.
 - [FINAL] Exercise 12: Image Recognition with Convolutional Neural Networks
 
 <p align="center"> 
