@@ -80,13 +80,16 @@ private:
 
     unsigned const int INIT_MUT = 60;
 
-    const double M_EXP = 0.2;    
-    const double C_EXP = 1.3;
+    const unsigned int MUTATIONS = 900;
+    const unsigned int CROSSOVERS = 900;
+
+    const double M_EXP = 0.3;    
+    const double C_EXP = 1.4;
 
     const double PSWAP = 0.1;
     const double PMSWAP = 0.1;
-    const double PSHIFT = 0.2;
-    const double PCROSS = 0.8;    
+    const double PSHIFT = 0.1;
+    const double PCROSS = 0.6;    
 
     unsigned int generation;
     unsigned int pop_size;

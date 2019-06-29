@@ -79,7 +79,7 @@ void TSProblem::AdvanceGeneration(){
     double rswap, rmswap, rshift, rcross;
 
     // chernobyl loop
-    for(unsigned int i = 0; i<pop_size; i++){
+    for(unsigned int i = 0; i<MUTATIONS; i++){
 
         j = (int)(pop_size*pow(rnd->Rannyu(),M_EXP));
 
@@ -105,7 +105,7 @@ void TSProblem::AdvanceGeneration(){
     }
 
     // crossover loop
-    for(unsigned int i = 0; i<pop_size; i++){
+    for(unsigned int i = 0; i < CROSSOVERS; i++){
 
         j = (int)(pop_size*pow(rnd->Rannyu(),C_EXP));
         k = (int)(pop_size*pow(rnd->Rannyu(),C_EXP));
@@ -189,6 +189,9 @@ void TSProblem::CostCalc(){
             //cost += Norm(paths[i][j], paths[i][j+1]);
             cost += sqrt(Norm(paths[i][j], paths[i][j+1]));
         }
+
+        cost += sqrt(Norm(paths[i][ncity-1], paths[i][0]));
+        
         costs[i] = cost;
         fitness[i] = 1/cost;
     }
@@ -302,38 +305,11 @@ vector<unsigned int> TSProblem::ShiftMutation(vector<unsigned int> path, unsigne
     return path;
 }
 
-vector<unsigned int> TSProblem::MShiftMutation(vector<unsigned int> path, unsigned int m, unsigned int n){
+//vector<unsigned int> TSProblem::MShiftMutation(vector<unsigned int> path, unsigned int m, unsigned int n){
 
 
-    return;
-}
-
-vector<unsigned int> Inversion(vector<unsigned int> path, unsigned int m, unsigned int n){
-
-
-
-int a=rnum(rnd.Rannyu());
-  int b=rnum(rnd.Rannyu());
-
-  
-  if(a+b>=N) b=N-a;
-  vector<int> copy(b);
-  for(int i=0; i<b; i++){
-    copy[i]=v[PBC(a+i)];
-  }
-  
-  for(int i=0; i<a; i++){
-    v[i]=v[i];
-  }
-  for(int i=a+b; i<N; i++){
-    v[i]=v[i];
-  }
-  for(int i=0; i<b; i++){
-    v[PBC(i+a)]=copy[b-i-1];
-  }
-}
-
-
+  //  return void;
+//}
 
 
 //###################################################################
