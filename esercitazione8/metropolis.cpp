@@ -1,6 +1,6 @@
 #include "metropolis.h"
 
-Metropolis3D :: Metropolis3D(){
+Metropolis :: Metropolis(int dims){
 
     // RNG SETUP -------------------------------------------------------
 
@@ -30,19 +30,19 @@ Metropolis3D :: Metropolis3D(){
 
     steps = 0;
     rejects = 0;
+	dim = dims;
 
-    current_pos = new double[3];
-	initial_pos = new double[3];
-	
+    current_pos.reserve(dim);
+	initial_pos.reserve(dim);
 
-    for(unsigned int i = 0; i < 3; i++){
-        current_pos[i] = 0;
+	for(unsigned int i = 0; i < dim; i++){
+		current_pos[i] = 0;
 		initial_pos[i] = 0;
 	}
 
 }
 
-Metropolis3D :: Metropolis3D(double *start_pos){
+Metropolis :: Metropolis(vector <double> start_pos){
 
     // RNG SETUP -------------------------------------------------------
 
@@ -72,30 +72,22 @@ Metropolis3D :: Metropolis3D(double *start_pos){
 
     steps = 0;
     rejects = 0;
+	dim = start_pos.size();
 
-    current_pos = new double[3];
-	initial_pos = new double[3];
-	
-
-    for(unsigned int i = 0; i < 3; i++){
-        current_pos[i] = start_pos[i];
-		initial_pos[i] = start_pos[i];
-	}
+	current_pos = start_pos;
+    initial_pos = start_pos;
 
 }
 
-void Metropolis3D :: Reset(){
+void Metropolis :: Reset(){
 
 	steps = 0;
 	rejects = 0;
 
-	for(unsigned int i = 0; i < 3; i++){
-        current_pos[i] = initial_pos[i];
-	}
-
+    current_pos = initial_pos;
 }
 
-double Metropolis3D :: CalibrateFixed(double estimate ,double (func)(double, double, double)){
+double Metropolis :: CalibrateFixed(double estimate ,double (func)(vector <double> pos, vector <double> params)){
 
 	unsigned int trials = 1000;
 	double var_rate = 0.05;
@@ -125,7 +117,7 @@ double Metropolis3D :: CalibrateFixed(double estimate ,double (func)(double, dou
 
 }
 
-double Metropolis3D :: CalibrateGaussian(double estimate ,double (func)(double, double, double)){
+double Metropolis :: CalibrateGaussian(double estimate ,double (func)(vector <double> pos, vector <double> params)){
 
 	unsigned int trials = 1000;
 	double var_rate = 0.05;
@@ -156,22 +148,17 @@ double Metropolis3D :: CalibrateGaussian(double estimate ,double (func)(double, 
 	
 }
 
-void Metropolis3D :: GaussianStep(double sigma, double (func)(double, double, double)){
+void Metropolis :: GaussianStep(double sigma, double (func)(vector <double> pos, vector <double> params)){
 
-	double x = current_pos[0];
-	double y = current_pos[1];
-	double z = current_pos[2];
+	vector<double> nx = current_pos;
+	for(unsigned int i = 0; i < dim; i++){
+		nx[i] += rnd->Gauss(0, sigma);
+	}
 
-	double nx = x + rnd->Gauss(0, sigma);
-	double ny = y + rnd->Gauss(0, sigma);
-	double nz = z + rnd->Gauss(0, sigma);
-
-	double A = min(1., func(nx, ny, nz)/func(x,y,z));
+	double A = min(1., func(nx, params)/func(current_pos, params));
 
 	if (rnd->Rannyu()<A){
-		current_pos[0] = nx;
-		current_pos[1] = ny;
-		current_pos[2] = nz;
+		current_pos = nx;
 	} else {
 		rejects ++;
 	}
@@ -180,22 +167,20 @@ void Metropolis3D :: GaussianStep(double sigma, double (func)(double, double, do
 
 }
 
-void Metropolis3D :: FixedStep(double stepsize, double (func)(double, double, double)){
+void Metropolis :: FixedStep(double stepsize, double (func)(vector <double> pos, vector <double> params)){
 
-	double x = current_pos[0];
-	double y = current_pos[1];
-	double z = current_pos[2];
+	vector<double> nx = current_pos;
 
-	double nx = x + rnd->Rannyu()*stepsize - stepsize/2.;
-	double ny = y + rnd->Rannyu()*stepsize - stepsize/2.;
-	double nz = z + rnd->Rannyu()*stepsize - stepsize/2.;
+	for(unsigned int i = 0; i < dim; i++){
+		
+		nx[i] += stepsize*rnd->Rannyu() - stepsize/2;
 
-	double A = min(1., func(nx, ny, nz)/func(x,y,z));
+	}
+
+	double A = min(1., func(nx, params)/func(current_pos, params));
 
 	if (rnd->Rannyu()<A){
-		current_pos[0] = nx;
-		current_pos[1] = ny;
-		current_pos[2] = nz;
+		current_pos = nx;
 	} else {
 		rejects ++;
 	}
@@ -204,19 +189,15 @@ void Metropolis3D :: FixedStep(double stepsize, double (func)(double, double, do
 
 }
 
-double* Metropolis3D :: GetCurrentPos() const {
+vector<double> Metropolis :: GetCurrentPos() const {
 
-    double * return_pos = new double[3];
-
-    for(unsigned int i = 0; i < 3; i++){
-        return_pos[i] = current_pos[i];
-    }
+    vector<double> return_pos = current_pos;
 
     return return_pos;
 
 }
 
-double Metropolis3D :: GetAcceptanceRate() const {
+double Metropolis :: GetAcceptanceRate() const {
 
     if(steps == 0){
             return 0;
