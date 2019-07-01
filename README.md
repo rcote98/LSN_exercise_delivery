@@ -41,8 +41,8 @@ To view the simulation results, execute all the commands within the notebook in 
 - Exercise 7: Molecular Dynamics simulation using the Lennard-Jones model plus the Metropolis algorithm.
 - Exercise 8: Ground-State Optimization with Variational Monte Carlo methods.
 - Exercise 9: Developing a Genetic Algorithm for the Traveling Salesman Problem.
-- Exercise 10: Simmulated Annealing applied to the Traveling Salesman Problem.
-- [FINAL] Exercise 11: Application of simple Feedforward Neural Networks with Keras.
+- Exercise 10: Parallel Simmulated Annealing applied to the Traveling Salesman Problem.
+- [FINAL] Exercise 11: Application of simple Deep Neural Networks with Keras.
 - [FINAL] Exercise 12: Image Recognition with Convolutional Neural Networks
 
 <p align="center"> 
