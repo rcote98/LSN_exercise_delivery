@@ -1,5 +1,5 @@
 CC = g++
-PC = mpicc
+PC = mpicxx
 CFLAGS = -Wall -O3 --std=c++11
 
 all: esercizio10.1.exe esercizio10.2.exe
@@ -8,7 +8,7 @@ esercizio10.1.exe : esercizio10.1.o random.o annealing.o
 	$(CC) esercizio10.1.o random.o annealing.o -o esercizio10.1.exe
 
 esercizio10.2.exe : esercizio10.2.o random.o parallel.o
-	$(CC) esercizio10.2.o random.o parallel.o -o esercizio10.2.exe
+	$(PC) esercizio10.2.o random.o parallel.o -o esercizio10.2.exe
 
 esercizio10.1.o : esercizio10.1.cpp
 	$(CC) -c esercizio10.1.cpp -o esercizio10.1.o $(CFLAGS)

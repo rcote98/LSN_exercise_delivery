@@ -37,7 +37,8 @@ int main(){
 	// ------------------------------------------------------------------
 
     unsigned const int NCITY = 30;
-    unsigned const int GENS = 400;
+    unsigned const int GENS = 1000;
+    unsigned const int EVERY = 50;
 
     int gen;
     double avg_path;
@@ -82,12 +83,12 @@ int main(){
 
         fout << setw(20) << gen << setw(20) << avg_path << setw(20) << ave_fit << endl;
 
-        cout << setw(20) << gen << setw(20) << avg_path << setw(20) << ave_fit << endl;
+        if(gen%EVERY==0) cout << setw(20) << gen << setw(20) << avg_path << setw(20) << ave_fit << endl;
 
         CircularMap.AdvanceGeneration();
 
     }
-    //cout << "############################################################" << endl;
+    cout << "############################################################" << endl;
     fout.close();
 
     fout.open("output.circle.cities.dat");
@@ -142,7 +143,7 @@ int main(){
 
         fout << setw(20) << gen << setw(20) << avg_path << setw(20) << ave_fit << endl;
 
-        cout << setw(20) << gen << setw(20) << avg_path << setw(20) << ave_fit << endl;
+        if(gen%EVERY==0) cout << setw(20) << gen << setw(20) << avg_path << setw(20) << ave_fit << endl;
 
         SquareMap.AdvanceGeneration();
 

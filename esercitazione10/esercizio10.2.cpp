@@ -11,6 +11,16 @@ using namespace std;
 
 int main(int argc, char* argv[]){
 
+    // ###################################################################
+    // MPI STUFF #########################################################
+
+    MPI::Init(argc,argv);
+	int size = MPI::COMM_WORLD.Get_size();
+    int rank = MPI::COMM_WORLD.Get_rank();
+
+    if (rank == 0){
+
+    // ####################################################################
     // RNG SETUP ##########################################################
 
     Random *rnd;
@@ -36,12 +46,8 @@ int main(int argc, char* argv[]){
 	input.close();
 	} else cerr << "PROBLEM: Unable to open seed.in" << endl;
 
-	// ###################################################################
-    // MPI STUFF #########################################################
 
-    MPI::Init(argc,argv);
-	int size = MPI::COMM_WORLD.Get_size();
-    int rank = MPI::COMM_WORLD.Get_rank();
+
 
     cout << size <<  " " << rank << endl;
 
@@ -184,5 +190,9 @@ int main(int argc, char* argv[]){
     fout.close();
 
     cout << endl;
+    
+    }
+
+    MPI::Finalize();
 
 }

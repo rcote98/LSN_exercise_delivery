@@ -43,7 +43,8 @@ public:
 
     // mutation stuff
 
-    void Crossover(unsigned int i, unsigned int j);
+    unsigned int Selection(double exponent);
+    vector< vector< unsigned int > > Crossover(unsigned int i, unsigned int j);
     vector<unsigned int> SwapMutation(vector<unsigned int> path);
     vector<unsigned int> SwapMutation(vector<unsigned int> path, unsigned int m);
     vector<unsigned int> ShiftMutation(vector<unsigned int> path, unsigned int m);
@@ -66,7 +67,7 @@ public:
     // printers
 
     void ShowPops(unsigned int n);
-    void PrintPath(unsigned int i);
+    void PrintPath(unsigned int i, unsigned int new_paths=0);
 
     // getters
 
@@ -80,16 +81,12 @@ private:
 
     unsigned const int INIT_MUT = 60;
 
-    const unsigned int MUTATIONS = 900;
-    const unsigned int CROSSOVERS = 900;
-
-    const double M_EXP = 0.3;    
-    const double C_EXP = 1.4;
+    const double SEL_EXP = 1.3;
 
     const double PSWAP = 0.1;
     const double PMSWAP = 0.1;
     const double PSHIFT = 0.1;
-    const double PCROSS = 0.6;    
+    const double PCROSS = 0.5;    
 
     unsigned int generation;
     unsigned int pop_size;
@@ -100,6 +97,7 @@ private:
     vector< double > fitness;
     vector< vector< double > > cities;
     vector< vector< unsigned int > > paths; 
+    vector< vector< unsigned int > > new_paths; 
 };
 
 #endif 

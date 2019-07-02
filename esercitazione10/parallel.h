@@ -1,5 +1,5 @@
-#ifndef __TSProblem__
-#define __TSProblem__
+#ifndef __Annealing__
+#define __Annealing__
 
 #include <iostream>
 #include <fstream>

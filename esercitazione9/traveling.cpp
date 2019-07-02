@@ -40,8 +40,11 @@ TSProblem :: TSProblem(vector< vector<double> > c){
     }
 
     pop_size = ncity*ncity;
-    costs.reserve(pop_size);
+
     paths.reserve(pop_size);
+    new_paths.reserve(pop_size);
+
+    costs.reserve(pop_size);
     fitness.reserve(pop_size);
 
     generation = 1;
@@ -69,57 +72,93 @@ TSProblem :: TSProblem(vector< vector<double> > c){
 //###################################################################
 // GENERATION STUFF #################################################
 
-
 void TSProblem::AdvanceGeneration(){
+  
+    unsigned int p1, p2; // parents
+    vector<unsigned int> child1, child2; // children
+    vector< vector< unsigned int > > children;
 
-    int j, k;
-
-    int moved, shift;
-
+    unsigned int moved, shift;
     double rswap, rmswap, rshift, rcross;
 
-    // chernobyl loop
-    for(unsigned int i = 0; i<MUTATIONS; i++){
+    unsigned int npops = 0;
 
-        j = (int)(pop_size*pow(rnd->Rannyu(),M_EXP));
+    while(npops < pop_size){
+
+        rcross = rnd->Rannyu();
+
+        if(rcross < PCROSS){
+            
+            p1 = Selection(SEL_EXP);
+            p2 = Selection(SEL_EXP);
+
+            while(p1 == p2){
+                p2 = Selection(SEL_EXP);
+            }
+
+            children = Crossover(p1,p2);
+
+            child1 = children[0];
+            child2 = children[1];
+
+
+        } else {
+
+            p1 = Selection(SEL_EXP);
+            p2 = Selection(SEL_EXP);
+            
+            while(p1 == p2){
+                p2 = Selection(SEL_EXP);
+            }
+
+            child1 = paths[p1];
+            child2 = paths[p2];
+
+        }
 
         // swap two cities
         rswap = rnd->Rannyu();
         if (rswap < PSWAP){ 
-            paths[j] = SwapMutation(paths[j]);
+            child1 = SwapMutation(child1);
+            child2 = SwapMutation(child2);
         }
 
-        // swap "moved" cities
+        // swap multiple cities
         rmswap = rnd->Rannyu();
         if (rmswap < PMSWAP){
             moved = (int) (rnd->Rannyu()*ncity/3);
-            paths[j] = SwapMutation(paths[j], moved);
+            child1 = SwapMutation(child1, moved);
+
+            moved = (int) (rnd->Rannyu()*ncity/3);
+            child2 = SwapMutation(child2, moved);
         }
 
         // shift the whole path by "shift"
         rshift = rnd->Rannyu();
         if (rshift < PSHIFT){
             shift = (int) (rnd->Rannyu()*ncity/3);
-            paths[j] = ShiftMutation(paths[j], shift);
+            child1 = ShiftMutation(child1, shift);
+
+            shift = (int) (rnd->Rannyu()*ncity/3);
+            child2 = ShiftMutation(child2, shift);
         }
+
+        new_paths[npops] = child1;    
+        new_paths[npops+1] = child2;
+
+        //PrintPath(npops, 1);
+        //PrintPath(npops+1, 1);
+
+        npops+=2;
     }
 
-    // crossover loop
-    for(unsigned int i = 0; i < CROSSOVERS; i++){
-
-        j = (int)(pop_size*pow(rnd->Rannyu(),C_EXP));
-        k = (int)(pop_size*pow(rnd->Rannyu(),C_EXP));
-
-        rcross = rnd->Rannyu();
-        if (rcross < PCROSS) Crossover(j, k);
-
-        if(!CheckPath(j)) exit(0);
-
+    for(unsigned int i = 0; i < pop_size; i++){
+        paths[i] = new_paths[i];
     }
 
     for(unsigned int i = 0; i < pop_size; i++){
         if(!CheckPath(i)){
-            cout << "Invalid path:" << endl;
+            cout << "Invalid path: " << i << endl;
             PrintPath(i);
             cout << "Exiting..." << endl;
             exit(0);
@@ -185,11 +224,11 @@ void TSProblem::CostCalc(){
     double cost;
     for(unsigned int i = 0; i < paths.size(); i++){
         cost = 0;
+
         for(unsigned int j = 0; j < ncity-1; j++){
             //cost += Norm(paths[i][j], paths[i][j+1]);
             cost += sqrt(Norm(paths[i][j], paths[i][j+1]));
         }
-
         cost += sqrt(Norm(paths[i][ncity-1], paths[i][0]));
         
         costs[i] = cost;
@@ -204,7 +243,13 @@ void TSProblem::SortPopulation(){
 //###################################################################
 // MUTATION STUFF ###################################################
 
-void TSProblem::Crossover(unsigned int p1, unsigned int p2){
+unsigned int TSProblem::Selection(double exponent){
+
+    return (int)(pop_size*pow(rnd->Rannyu(),exponent));
+
+}
+
+vector< vector< unsigned int > > TSProblem::Crossover(unsigned int p1, unsigned int p2){
 
     unsigned int cut = (int)(ncity*rnd->Rannyu());
     unsigned int tail = ncity - cut;
@@ -248,9 +293,12 @@ void TSProblem::Crossover(unsigned int p1, unsigned int p2){
         }
     }
 
+    vector< vector< unsigned int > > children;
 
-    paths[p1] = child1;
-    paths[p2] = child2;
+    children.push_back(child1);
+    children.push_back(child2);
+
+    return children;
 }
 
 vector<unsigned int> TSProblem::SwapMutation(vector<unsigned int> path){
@@ -429,13 +477,20 @@ void TSProblem::ShowPops(unsigned int n){
 
 }
 
-void TSProblem::PrintPath(unsigned int i){
+void TSProblem::PrintPath(unsigned int i, unsigned int newpaths){
 
-    cout << endl << "[";
-    for(unsigned int j = 0; j < ncity; j++){
-        cout << setw(3) << paths[i][j];
+    if(newpaths == 0){
+        cout << endl << "[";
+        for(unsigned int j = 0; j < ncity; j++){
+            cout << setw(3) << paths[i][j];
+        }
+        cout << "]" << endl << endl;
+    } else {
+        cout << endl << "[";
+        for(unsigned int j = 0; j < ncity; j++){
+            cout << setw(3) << new_paths[i][j];
+        }
+        cout << "]" << endl << endl;
     }
-    cout << "]" << endl << endl;
-
 
 }

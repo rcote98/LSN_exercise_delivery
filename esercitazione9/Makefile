@@ -16,4 +16,4 @@ traveling.o : traveling.cpp traveling.h
 	$(CC) -c traveling.cpp -o traveling.o $(CFLAGS)
 
 clean:
-	rm *.o *.exe output.*.dat
+	rm *.o *.exe
