@@ -1,40 +1,40 @@
 #/usr/bin/bash
 
 echo "Cleaning stuff up..."
-echo " "
+echo 
 
 make clean
 ./clean.sh
 
-echo " "
+echo 
 echo "Compiling..."
-echo " "
+echo 
 
 make 
 
-echo " "
+echo 
 echo "Starting Simulation Process..."
+
+mkdir -p sim_data
 
 # SOLID SIMULATION
 
-echo " "
+echo 
 echo "Starting SOLID simulation:"
 echo " -- Equilibration phase -- "
-echo " "
+echo 
 
 cp setups/input.solid input.dat
 cp setups/config.fcc config.0
 
 ./esercizio7.exe
 
-mkdir sim_data/solid
+mkdir -p sim_data/solid
 mv output*.0 sim_data/solid/
 
-
-
-echo " "
+echo
 echo " -- Measurement Phase -- "
-echo " "
+echo 
 
 cp config.final config.0
 
@@ -42,17 +42,16 @@ cp config.final config.0
 
 mv output*.0 sim_data/solid/
 
-
-echo " "
+echo 
 echo "DONE!"
-echo " "
+echo 
 
 # LIQUID SIMULATION
 
-echo " "
+echo 
 echo "Starting LIQUID simulation:"
 echo " -- Equilibration phase -- "
-echo " "
+echo 
 
 
 cp setups/input.liquid input.dat
@@ -60,13 +59,13 @@ cp setups/config.fcc config.0
 
 ./esercizio7.exe
 
-mkdir sim_data/liquid
+mkdir -p sim_data/liquid
 mv output*.0 sim_data/liquid/
 
 
-echo " "
+echo 
 echo "Yet again..."
-echo " "
+echo 
 
 cp config.final config.0
 
@@ -74,9 +73,9 @@ cp config.final config.0
 
 mv output*.0 sim_data/liquid/
 
-echo " "
+echo 
 echo " -- Measurement Phase -- "
-echo " "
+echo 
 
 cp config.final config.0
 
@@ -84,27 +83,27 @@ cp config.final config.0
 
 mv output*.0 sim_data/liquid/
 
-echo " "
+echo 
 echo "DONE!"
-echo " "
+echo 
 
 # GAS SIMULATION
 
-echo " "
+echo 
 echo "Starting GAS simulation:"
-echo " "
+echo 
 
 cp setups/input.gas input.dat
 cp setups/config.fcc config.0
 
 ./esercizio7.exe
 
-mkdir sim_data/gas
+mkdir -p sim_data/gas
 mv output*.0 sim_data/gas/
 
-echo " "
+echo 
 echo "Yet again..."
-echo " "
+echo 
 
 cp config.final config.0
 
@@ -112,9 +111,9 @@ cp config.final config.0
 
 mv output*.0 sim_data/gas/
 
-echo " "
+echo 
 echo " -- Measurement Phase -- "
-echo " "
+echo 
 
 cp config.final config.0
 
@@ -122,9 +121,7 @@ cp config.final config.0
 
 mv output*.0 sim_data/gas/
 
-
-
-echo " "
+echo 
 echo "DONE!"
 echo
 echo "SIMULATION PROCESS COMPLETE!"

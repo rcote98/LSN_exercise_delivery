@@ -16,6 +16,9 @@ _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
 int seed[4];
 Random rnd;
 
+bool verbose;
+int nconf;
+
 //parameters, observables
 const int m_props=1000;
 int n_props, iv, iw, igofr;

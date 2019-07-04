@@ -20,13 +20,15 @@ using namespace std;
 
 int main()
 { 
-	Input(); //Inizialization
-	int nconf = 1;
+	nconf = 1;
 	mcstep = 1;
-	for(int iblk=1; iblk <= nblk; ++iblk) //Simulation
-	{
 
-		
+	verbose = false;
+
+	Input(); //Inizialization
+
+	for(int iblk=1; iblk <= nblk; ++iblk) //Simulation
+	{		
 		Reset(iblk);   //Reset block averages
 		for(int istep=1; istep <= nstep; ++istep)
 		{
@@ -51,11 +53,14 @@ void Input(void)
 {
 	ifstream ReadInput,ReadConf;
 
-	cout << "Classic Lennard-Jones fluid        " << endl;
-	cout << "Monte Carlo simulation             " << endl << endl;
-	cout << "Interatomic potential v(r) = 4 * [(1/r)^12 - (1/r)^6]" << endl << endl;
-	cout << "Boltzmann weight exp(- beta * sum_{i<j} v(r_ij) ), beta = 1/T " << endl << endl;
-	cout << "The program uses Lennard-Jones units " << endl;
+	if(verbose){
+		cout << "Classic Lennard-Jones fluid        " << endl;
+		cout << "Monte Carlo simulation             " << endl << endl;
+		cout << "Interatomic potential v(r) = 4 * [(1/r)^12 - (1/r)^6]" << endl << endl;
+		cout << "Boltzmann weight exp(- beta * sum_{i<j} v(r_ij) ), beta = 1/T " << endl << endl;
+		cout << "The program uses Lennard-Jones units " << endl;
+	}
+
 
 	//Read seed for random numbers
 	 int p1, p2;
@@ -236,16 +241,14 @@ void Measure()
 
 			//update of the histogram of g(r)
 			for(unsigned int k = 0; k < nbins; k++){
+
 				interval_min = k*max_radius/nbins;
 				interval_max = (k+1)*max_radius/nbins;
 
-				norm = rho*npart*4*M_PI/3*(pow(interval_max, 3) - pow(interval_min, 3));
-
 				if(dr < interval_max && dr > interval_min){
-					walker[igofr+k] += 2./norm;
+					walker[igofr+k] += 2;
 				}
 			}
-
 			
 
 			if(dr < rcut)
@@ -346,11 +349,12 @@ void Averages(int iblk) //Print results for current block
 		
 		r = (interval_max - interval_min)/2;
 
-		stima_gofr += r*walker[igofr+k];
+		norm = rho*npart*4*M_PI/3*(pow(interval_max, 3) - pow(interval_min, 3));
 
+		stima_gofr += r*walker[igofr+k]/norm;
 	}
 
-	glob_av[igofr] += stima_gofr/blk_norm;
+	glob_av[igofr] += stima_gofr;
 	glob_av2[igofr] += stima_gofr*stima_gofr;
 	err_gofr=Error(glob_av[igofr],glob_av2[igofr],iblk);
 
