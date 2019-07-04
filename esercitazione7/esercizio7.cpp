@@ -25,6 +25,8 @@ int main()
 	mcstep = 1;
 	for(int iblk=1; iblk <= nblk; ++iblk) //Simulation
 	{
+
+		
 		Reset(iblk);   //Reset block averages
 		for(int istep=1; istep <= nstep; ++istep)
 		{
@@ -237,7 +239,7 @@ void Measure()
 				interval_min = k*max_radius/nbins;
 				interval_max = (k+1)*max_radius/nbins;
 
-				norm = rho*npart*4*M_PI/3*(pow(interval_max, 2) - pow(interval_max, 2));
+				norm = rho*npart*4*M_PI/3*(pow(interval_max, 3) - pow(interval_min, 3));
 
 				if(dr < interval_max && dr > interval_min){
 					walker[igofr+k] += 2./norm;
