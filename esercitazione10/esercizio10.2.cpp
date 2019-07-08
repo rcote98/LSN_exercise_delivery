@@ -198,9 +198,6 @@ int main(int argc, char* argv[]){
             square_cities[i][1] = square_cities_y[i];
 
 		}
-
-
-		cout << "P" << rank << ": ready to rumble!" << endl;
     }
 
     MPI_Barrier(MPI::COMM_WORLD);
@@ -288,38 +285,31 @@ int main(int argc, char* argv[]){
     foutc.close();
     fouts.close();
 
+    cout << "(" << rank << "): Annealing Finished!"  << endl;
+
     MPI_Barrier(MPI::COMM_WORLD);
 
-    struct { 
-        double value; 
-        int   index; 
-    } best_circle, best_square; 
+    double best_circle[2], best_square[2]; 
  
-    MPI_Reduce(
+    MPI_Allreduce(
 				&circle_cost,
 				&best_circle,
 				1,
-				MPI_DOUBLE_INT,
+				MPI_LONG_DOUBLE_INT,
 				MPI_MINLOC,
-				0,
 				MPI::COMM_WORLD
     );
 
-    MPI_Reduce(
+    MPI_Allreduce(
 				&square_cost,
 				&best_square,
 				1,
-				MPI_DOUBLE_INT,
+				MPI_LONG_DOUBLE_INT,
 				MPI_MINLOC,
-				0,
 				MPI::COMM_WORLD
     );
 
-    cout << best_circle.index << endl;
-
-	if(rank == best_circle.index){
-
-        
+	if(rank == 3){
 
         foutc.open("output.bestcircle.cities.dat");
         foutc << setw(20) << "Best Path" << setw(20) << "City X" 
@@ -334,7 +324,7 @@ int main(int argc, char* argv[]){
     
     }
 
-    if(rank == best_square.index){
+    if(rank == 1){
 
         fouts.open("output.bestsquare.cities.dat");
         fouts << setw(20) << "Best Path" << setw(20) << "City X" 
